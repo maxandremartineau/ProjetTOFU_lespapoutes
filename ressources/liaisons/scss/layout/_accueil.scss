@@ -1,0 +1,10 @@
+.accueil {
+  &__titre {
+    padding: 20px;
+  }
+
+  &__layout {
+    display: flex;
+    flex-direction: row;
+  }
+}
