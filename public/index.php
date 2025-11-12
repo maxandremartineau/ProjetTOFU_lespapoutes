@@ -18,7 +18,7 @@
 	<?php include ($niveau . "liaisons/inc/fragments/entete.inc.php");?>
 
 	<main>
-		<div id="contenu" class="conteneur">
+		<div id="contenu" class="text-red-500">
 			<h2>Entête de page</h2>
 
 			<?php
