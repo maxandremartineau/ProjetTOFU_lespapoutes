@@ -12,8 +12,8 @@ if (stristr($_SERVER['HTTP_HOST'], 'local') || (substr($_SERVER['HTTP_HOST'], 0,
 if ($blnLocal) {
     $strHost = 'localhost';
     $strBD = '25_rpni1_tofu';
-    $strUser = 'root';
-    $strPassword = '';
+    $strUser = '25_rpni1_tofu';
+    $strPassword = '25_rpni1_tofu';
     // $strUser = 'rpni1_user';
     // $strPassword= 'rpni1_mdp';
     error_reporting(E_ALL);
