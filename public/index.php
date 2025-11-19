@@ -1,5 +1,5 @@
 <?php $niveau="./";?>
-<?php include ($niveau . "liaisons/inc/config.inc.php");?>
+
 
 <!DOCTYPE html>
 <html lang="fr">
@@ -10,30 +10,16 @@
 	<meta name="author" content="">
 	<meta charset="utf-8">
 	<title>Un beau titre ici!</title>
-	<?php include ($niveau . "liaisons/inc/fragments/head_links.inc.php");?>
+	<?php require_once($niveau.'liaisons/inc/fragments/head_links.inc.php');?>
 </head>
 
 <body>
 
-	<?php include ($niveau . "liaisons/inc/fragments/entete.inc.php");?>
+
 
 	<main>
-		<div id="contenu" class="text-red-500">
+		<div id="contenu" class="text-blue-500">
 			<h2>Entête de page</h2>
-
-			<?php
-				$requeteSQL = "SELECT nom FROM listes";
-				$objStat = $pdoConnexion->prepare($requeteSQL);
-				$objStat->execute();
-				$arrListes = $objStat->fetchAll();
-			?>
-
-			<ul>
-				<?php foreach($arrListes as $liste): ?>
-					<li><?= $liste["nom"] ?></li><br>
-				<?php endforeach; ?>
-			</ul>
-
 			<section>
 				<h3>Entête de section</h3>
 				<article>
