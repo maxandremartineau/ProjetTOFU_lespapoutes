@@ -1,4 +1,7 @@
-<?php $niveau="./";?>
+<?php 
+require_once('liaisons/inc/config.inc.php');
+$niveau="./";
+?>
 
 
 <!DOCTYPE html>
@@ -13,51 +16,26 @@
 	<?php require_once($niveau.'liaisons/inc/fragments/head_links.inc.php');?>
 </head>
 
-<body>
+<body >
+<header>
+	<?php require_once($niveau.'liaisons/inc/fragments/entete.inc.php');?>
+</header>
 
-
-
+<div class="bg-[#383839]">
 	<main>
-		<div id="contenu" class="text-blue-500">
+		<div id="contenu" class="text-white">
 			<h2>Entête de page</h2>
-			<section>
-				<h3>Entête de section</h3>
-				<article>
-					<header>
-						<h4>Entête d'article</h4>
-					</header>
-					<p>Lorem ipsum dolor HTML5 nunc aut nunquam sit amet, consectetur adipiscing elit. Vivamus at est eros, vel fringilla urna.</p>
-					<p>Per inceptos himenaeos. Quisque feugiat, justo at vehicula pellentesque, turpis lorem dictum nunc.</p>
-					<footer>
-						<h5>Pied d'article</h5>
-					</footer>
-				</article>
-				<article>
-					<header>
-						<h4>Entête d'article</h4>
-					</header>
-					<p>Lorem ipsum dolor nunc aut nunquam sit amet, consectetur adipiscing elit. Vivamus at est eros, vel fringilla urna. Pellentesque odio</p>
-					<footer>
-						<h5>Pied d'article</h5>
-					</footer>
-				</article>
-			</section>
-		</div>
-	
-   
-        <p><a href="#" class="bouton">Bouton</a></p>
-		<p><a href="#" class="bouton--inverse">Bouton</a></p>
-     	<a href="#" class="hyperlien">lien test!</a>
+			
 	</main>
 	
-	<aside>
+	<aside class="text-white">
         <h3>Barre latérale</h3>
-        <p>
-        	Lorem ipsum dolor nunc aut nunquam sit amet, consectetur adipiscing elit. Vivamus at est eros, vel fringilla urna. Pellentesque odio rhoncus
-        </p>
+
+    
 	</aside>
-	
-	
-	<?php include ($niveau . "liaisons/inc/fragments/pied_de_page.inc.php");?>
+</div>
+	<footer>
+		<?php include ($niveau . "liaisons/inc/fragments/pied_de_page.inc.php");?>
+	</footer>
 </body>
 </html>
