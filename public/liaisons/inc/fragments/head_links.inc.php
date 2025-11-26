@@ -1,1 +1,1 @@
-<link rel="stylesheet" href="liaisons/css/styles.css">
+<link rel="stylesheet" href="<?php echo $niveau; ?>liaisons/css/styles.css">;
