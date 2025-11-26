@@ -1,4 +1,4 @@
-<header class="w-full bg-[#463f6b] text-white py-6">
+<header class="w-full bg-[#463f6b] text-white py-6 mb-6">
     <div class="max-w-7xl mx-auto flex flex-col items-center gap-6 px-8 
                 md:flex-row md:justify-between">
 

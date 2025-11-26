@@ -15,13 +15,14 @@ $niveau="./";
     <?php require_once($niveau.'liaisons/inc/fragments/head_links.inc.php');?>
 </head>
 
+<div class="bg-[#383839]">
 <body>
 
 <header>
     <?php require_once($niveau.'liaisons/inc/fragments/entete.inc.php');?>
 </header>
 
-<div class="bg-[#383839]">
+
 <main>
 
 <?php
@@ -69,8 +70,6 @@ $strRequeteListe = "
         ON listes.couleur_id = couleurs.id
 ";
 
-
-
 $pdosResultat = $pdoConnexion->query($strRequeteListe);
 
 // Créer le tableau
@@ -92,7 +91,30 @@ while ($ligne = $pdosResultat->fetch()) {
 $pdosResultat->closeCursor();
 ?>
 
-<h1 class="text-white font-bold text-5xl">Vos listes :</h1>
+<!-- WRAPPER TITRE + BOUTON / RESPONSIVE -->
+<div class="max-w-5xl mx-auto w-full mt-8 px-4">
+
+    <div class="flex flex-col items-center text-center
+                sm:flex-row sm:items-center sm:justify-between sm:text-left gap-4">
+
+        <h1 class="text-white font-bold text-5xl">
+            Toutes les listes
+        </h1>
+
+        <form action="listes/ajouter.php" method="GET">
+            <input 
+                type="submit" 
+                name="btn_nouveau" 
+                value="Ajouter une liste"
+                class="px-6 py-3 bg-pink-400 hover:bg-pink-500 text-black font-semibold rounded-lg cursor-pointer shadow"
+            >
+        </form>
+
+    </div>
+
+</div>
+
+
 
 <!-- ------------------------------------------------------------
 FORMULAIRE #1 : LISTES
@@ -120,7 +142,7 @@ for ($intCptListes = 0; $intCptListes < count($arrListes); $intCptListes++) {
         </div>
 
         <div class='flex items-center gap-6 relative'>
-            <a href='../maj/index.php?id_liste=$idListe' class='flex items-center gap-1 hover:underline hover:text-[#FF66D6]'>
+            <a href='". $niveau ."listes/modifier.php?id_liste=$idListe' class='flex items-center gap-1 hover:underline hover:text-[#FF66D6]'>
                 <img src='liaisons/images/icons/edit.svg' class='w-6 hover:text-[#FF66D6]' alt=''> Modifier
             </a>
             <div class='hover:underline hover:text-[#FF66D6] relative'>
@@ -144,4 +166,5 @@ for ($intCptListes = 0; $intCptListes < count($arrListes); $intCptListes++) {
 </footer>
 
 </body>
+</div>
 </html>
