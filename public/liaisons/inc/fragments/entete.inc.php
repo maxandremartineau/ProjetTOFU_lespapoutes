@@ -22,7 +22,7 @@
 
                 <button class="h-10 px-3 flex items-center justify-center">
                     <img 
-                        src="<?php echo $niveau ?>liaisons/images/logo/tabler_search.svg"  
+                        src="<?php echo $niveau ?>liaisons/images/icons/tabler_search.svg"  
                         class="w-5 h-5" 
                         alt="Recherche"
                     >
@@ -38,7 +38,7 @@
             <p class="text-sm">Bienvenue Maxandre</p>
             <div class="flex justify-center text-3xl">
                 <img 
-                    src="<?php echo $niveau ?>liaisons/images/logo/user.svg"  
+                    src="<?php echo $niveau ?>liaisons/images/icons/user.svg"  
                     class="w-8 h-8" 
                     alt="utilisateur"
                 >
