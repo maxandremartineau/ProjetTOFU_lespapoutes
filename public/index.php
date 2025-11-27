@@ -12,14 +12,14 @@ $niveau="./";
     <meta name="author" content="">
     <meta charset="utf-8">
     <title>Accueil Projet TOFU</title>
-    <?php require_once($niveau.'liaisons/inc/fragments/head_links.inc.php');?>
+    <?php include($niveau.'liaisons/inc/fragments/head_links.inc.php');?>
 </head>
 
 <div class="bg-[#383839]">
 <body>
 
 <header>
-    <?php require_once($niveau.'liaisons/inc/fragments/entete.inc.php');?>
+    <?php include($niveau.'liaisons/inc/fragments/entete.inc.php');?>
 </header>
 
 
