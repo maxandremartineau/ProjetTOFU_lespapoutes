@@ -1,1 +1,1 @@
-<link rel="stylesheet" href="<?= $niveau ?>liaisons/css/styles.css">
+<link rel="stylesheet" href="<?= $niveau?>liaisons/css/styles.css">
