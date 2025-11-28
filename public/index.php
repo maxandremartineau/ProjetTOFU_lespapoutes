@@ -50,6 +50,35 @@ if (isset($_GET['id_liste'])) {
 
 }
 
+// ------------------------------------------------------------
+// Récupérer les items arrivant à échéance
+// ------------------------------------------------------------
+$strRequeteEcheances = "
+    SELECT items.*, listes.nom AS nom_liste
+    FROM items
+    INNER JOIN listes ON items.liste_id = listes.id
+    WHERE items.echeance IS NOT NULL
+        AND items.est_complete = 0
+    ORDER BY items.echeance ASC
+    LIMIT 3
+";
+
+$pdosEcheances = $pdoConnexion->query($strRequeteEcheances);
+
+// ------------------------------------------------------------
+// Nombre total d'items arrivant à échéance
+// ------------------------------------------------------------
+$strRequeteTotalEcheances = "
+    SELECT COUNT(*) AS total
+    FROM items
+    WHERE echeance IS NOT NULL
+        AND est_complete = 0
+";
+
+$pdosTotal = $pdoConnexion->query($strRequeteTotalEcheances);
+$totalEcheances = $pdosTotal->fetch()['total'];
+
+
 //------------------------------------------------------------
 // CHARGER LA LISTE DES LISTES AVEC LE NOMBRE D’ITEMS
 //------------------------------------------------------------
@@ -91,7 +120,68 @@ while ($ligne = $pdosResultat->fetch()) {
 $pdosResultat->closeCursor();
 ?>
 
-<!-- WRAPPER TITRE + BOUTON / RESPONSIVE -->
+<!-- Bloc échéance -->
+
+<?php if ($totalEcheances > 0) { ?>
+
+<div class="border-3 border-white/20 rounded-lg max-w-5xl mx-auto mt-12 mb-16 overflow-hidden">
+
+    <div class="flex items-center justify-between bg-[#463f6b] py-8 px-6">
+
+        <h2 class="text-white font-bold text-3xl">Item(s) venant à échéance</h2>
+
+        <!-- LOGO + BULLE ROUGE -->
+        <div class="relative inline-block">
+            <img src="liaisons/images/icons/echeanceBlanc.svg" class="w-10 h-auto" alt="Logo échéance">
+            <span class="absolute -top-1 -right-1 
+                         bg-red-600 text-white text-xs font-bold 
+                         rounded-full w-6 h-6 flex items-center justify-center shadow-lg">
+                <?php echo $totalEcheances; ?>
+            </span>
+        </div>
+
+    </div>
+
+    <!-- LISTE DES ITEMS -->
+    <div class="flex flex-col">
+
+        <?php while ($item = $pdosEcheances->fetch()) {
+
+            $dateObj = new DateTime($item['echeance']);
+            $dateAffiche = $dateObj->format('H\hi / d/m/Y');
+
+        ?>
+
+        <!-- UN ITEM -->
+        <div class="flex justify-between bg-[#D1C2FF] text-black p-4 w-full">
+
+
+            <div class="font-semibold">
+                La liste des <?= $item['nom_liste'] ?>
+            </div>
+
+            <div>
+                <?= $item['nom'] ?>
+            </div>
+
+            <div class="text-red-500 font-bold">
+                <?= $dateAffiche ?>
+            </div>
+
+        </div>
+
+        <?php } ?>
+
+    </div>
+
+</div>
+
+<?php } ?>
+
+
+
+
+
 <div class="max-w-5xl mx-auto w-full mt-8 px-4">
 
     <div class="flex flex-col items-center text-center
@@ -116,16 +206,13 @@ $pdosResultat->closeCursor();
 
 
 
-<!-- ------------------------------------------------------------
-FORMULAIRE #1 : LISTES
-------------------------------------------------------------- -->
 <form action="index.php" method="GET">
+
 <ul class="text-white">
 
 <?php
 for ($intCptListes = 0; $intCptListes < count($arrListes); $intCptListes++) {
 
-    // Récupération des valeurs
     $idListe = $arrListes[$intCptListes]["id"];
     $nomListe = $arrListes[$intCptListes]["nom"];
     $couleur = $arrListes[$intCptListes]["couleur_id"];

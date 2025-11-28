@@ -3,7 +3,10 @@
                 md:flex-row md:justify-between">
 
         <!-- Futur logo -->
-        <div class="bg-white w-40 h-24 rounded md:w-64 md:h-40"></div>
+         <a href="<?= $niveau ?>index.php">
+            <div class="bg-white w-40 h-24 rounded md:w-64 md:h-40">
+            </div>
+        </a>
 
         <!-- Barre de recherche -->
         <div class="group flex items-center w-full justify-center md:w-auto">
