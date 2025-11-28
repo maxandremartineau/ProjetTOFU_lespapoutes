@@ -1,6 +1,52 @@
-<?php 
+<?php
 require_once('liaisons/inc/config.inc.php');
 $niveau="./";
+
+// ------------------------------------------------------------
+// Déterminer l'opération
+// ------------------------------------------------------------
+$strCodeOperation = "";
+if (isset($_GET['strCodeOperation'])) {
+    $strCodeOperation = $_GET['strCodeOperation'];
+}
+
+$strMessage = "";
+$strCodeErreur = "00000";
+
+// ------------------------------------------------------------
+// SUPPRIMER UNE LISTE (AVEC TES MODIFS)
+// ------------------------------------------------------------
+if ($strCodeOperation == "supprimer") {
+
+    if (isset($_GET['id_liste'])) {
+        $strIdListe = $_GET['id_liste'];
+    } else {
+        $strIdListe = "";
+    }
+
+    // DELETE dans la table listes
+    $strRequeteSupprimer = "
+        DELETE FROM listes
+        WHERE id = :id_liste
+    ";
+
+    $pdosResultatSupprimer = $pdoConnexion->prepare($strRequeteSupprimer);
+    $pdosResultatSupprimer->bindValue(':id_liste', $strIdListe);
+    $pdosResultatSupprimer->execute();
+
+    $strCodeErreur = $pdoConnexion->errorCode();
+
+    if ($strCodeErreur != "00000") {
+        // Si tu utilises arrMessages JSON, remplace la chaîne par $arrMessages["echouer"]
+        $strMessage = "Une erreur est survenue lors de la suppression.";
+    } else {
+        // Si tu utilises arrMessages JSON, remplace la chaîne par $arrMessages["supprimer"]
+        $strMessage = "Liste supprimée avec succès.";
+        // REDIRIGE VERS L'ACCUEIL
+        header("Location: index.php");
+        exit;
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -21,7 +67,6 @@ $niveau="./";
 <header>
     <?php include($niveau.'liaisons/inc/fragments/entete.inc.php');?>
 </header>
-
 
 <main>
 
@@ -233,7 +278,7 @@ for ($intCptListes = 0; $intCptListes < count($arrListes); $intCptListes++) {
                 <img src='liaisons/images/icons/edit.svg' class='w-6 hover:text-[#FF66D6]' alt=''> Modifier
             </a>
             <div class='hover:underline hover:text-[#FF66D6] relative'>
-                <a href='#' class='flex items-center gap-1 '>
+                <a href='#' class='flex items-center gap-1 btnOuvrirModaleSupp' data-id='$idListe'>
                     <img src='liaisons/images/icons/remove.svg' class='w-5' alt=''> Supprimer
                 </a>
             </div>
@@ -251,6 +296,97 @@ for ($intCptListes = 0; $intCptListes < count($arrListes); $intCptListes++) {
 <footer>
     <?php include ($niveau . "liaisons/inc/fragments/pied_de_page.inc.php");?>
 </footer>
+
+<!-- ======================= -->
+<!--  MODALE CONFIRMATION   -->
+<!-- ======================= -->
+
+<dialog id="modalSuppression" class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-lg rounded-2xl p-0 shadow-2xl backdrop:bg-black/70">
+
+    <form method="dialog" class="bg-[#D1C2FF] p-10 rounded-2xl text-black">
+
+        <h3 class="text-3xl font-bold mb-6 text-center">
+            Confirmer la suppression
+        </h3>
+
+        <p class="text-center text-black/90 mb-10 text-lg leading-relaxed">
+            Voulez-vous vraiment supprimer cette liste ?<br>
+            Cette action est irréversible.
+        </p>
+
+        <input type="hidden" id="idListeASupprimer" value="">
+
+        <div class="flex flex-col gap-4">
+
+            <!-- Bouton supprimer (rose) -->
+            <button 
+                id="btnConfirmerSuppression"
+                class="w-full bg-[#FF66D6] hover:bg-pink-500 text-black font-semibold py-3 rounded-xl shadow-lg text-lg">
+                Supprimer la liste
+            </button>
+
+            <!-- Bouton annuler (foncé + hover violet) -->
+            <button 
+                type="button"
+                id="btnAnnulerSuppression"
+                class="w-full bg-[#383839] hover:bg-[#5b5386] text-white font-semibold py-3 rounded-xl shadow-lg text-lg">
+                Annuler
+            </button>
+        </div>
+
+    </form>
+
+</dialog>
+
+
+
+<script>
+/* Ouvrir la modale depuis chaque lien Supprimer */
+document.querySelectorAll('.btnOuvrirModaleSupp').forEach(btn => {
+
+    btn.addEventListener('click', function(e) {
+        e.preventDefault();
+
+        let idListe = this.getAttribute('data-id');
+        document.getElementById('idListeASupprimer').value = idListe;
+
+        const dialogue = document.getElementById('modalSuppression');
+        if (typeof dialogue.showModal === 'function') {
+            dialogue.showModal();
+        } else {
+            // fallback si <dialog> non supporté
+            alert('Votre navigateur ne supporte pas <dialog>. Suppression : ' + idListe);
+            window.location.href = 'index.php?strCodeOperation=supprimer&id_liste=' + encodeURIComponent(idListe);
+        }
+    });
+});
+
+/* Confirmer la suppression -> rediriger vers l'opération supprimer */
+document.getElementById('btnConfirmerSuppression').addEventListener('click', function(e){
+    e.preventDefault();
+    let id = document.getElementById('idListeASupprimer').value;
+    // Redirection vers la même page avec les paramètres attendus
+    window.location.href = "index.php?strCodeOperation=supprimer&id_liste=" + encodeURIComponent(id);
+});
+
+/* Annuler : fermer la modale */
+document.getElementById('btnAnnulerSuppression').addEventListener('click', function(e){
+    e.preventDefault();
+    const dialogue = document.getElementById('modalSuppression');
+    if (typeof dialogue.close === 'function') {
+        dialogue.close();
+    }
+});
+
+/* Fermer la modale en cliquant à l'extérieur */
+document.getElementById('modalSuppression').addEventListener('click', function(e){
+    const rect = this.getBoundingClientRect();
+    // si clic à l'extérieur (sur le backdrop), fermer
+    if (e.clientX < rect.left || e.clientX > rect.right || e.clientY < rect.top || e.clientY > rect.bottom) {
+        if (typeof this.close === 'function') this.close();
+    }
+});
+</script>
 
 </body>
 </div>
