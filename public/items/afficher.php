@@ -80,116 +80,125 @@ $nbItems = count($arrItems);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <?php include($niveau.'liaisons/inc/fragments/head_links.inc.php'); ?>
+    <?php require_once($niveau.'liaisons/inc/fragments/head_links.inc.php'); ?>
     <title>Liste</title>
 </head>
 
-<body class="bg-slate-100">
+<body class="bg-[#383839]" >
 
 <?php include($niveau . "liaisons/inc/fragments/entete.inc.php"); ?>
 
-<main class="py-10 min-h-[70vh] flex justify-center">
+<main class="py-10 min-h-[70vh] ">
 
-<?php
-//message erreur
-if ($strMessage != '') {
-    echo "<p class='text-center text-red-600 font-bold text-xl mt-10'>$strMessage</p>";
-} 
-// affichage
-else {
-?>
+    <div class="max-w-5xl mx-auto w-full px-4">
 
-<section class="bg-[#463f6b] border-3 border-white/20 py-8 px-6 flex items-center justify-between m-8 max-w-5xl mx-auto">
-
-    <!-- nom de la liste -->
-     
-    <div class="flex items-center gap-3 bg-[#D1C2FF] px-6 py-4">
-        <span class="w-5 h-5 rounded-full border border-black"
-              style="background-color:#<?php echo $couleurHex; ?>"></span>
-
-        <h2 class="text-2xl font-semibold">
-            <?php echo $arrListe['nom']; ?> 
-            <span class="text-gray-700">(<?php echo $nbItems; ?>)</span>
-        </h2>
-    </div>
-
-    <!-- items -->
-    <?php 
-    for ($i = 0; $i < count($arrItems); $i++) {
-
-        $item = $arrItems[$i];
-
-        if ($item['echeance'] != '' && $item['echeance'] != NULL) {
-            $t = strtotime($item['echeance']);
-            $strEcheance = date("H\hi/d/m/Y", $t);
-        } else {
-            $strEcheance = "—";
-        }
+    <?php
+    // -----------------------------------------------------------
+    // Message d’erreur s’il y a lieu
+    // -----------------------------------------------------------
+    if ($strMessage != '') {
+        echo "<p class='text-center text-red-600 font-bold text-xl mt-10'>$strMessage</p>";
+    } 
+    // -----------------------------------------------------------
+    // Sinon : afficher le titre + les items
+    // -----------------------------------------------------------
+    else {
     ?>
 
-    <div class="flex items-stretch px-6 py-4 border-t bg-[#D1C2FF] text-sm">
+        <!-- Bande grise titre (comme un header de section) -->
+        <div class="flex items-center gap-3 bg-[#463f6b] border-3 border-white/20 px-6 py-4 rounded-md">
+            <span class="w-5 h-5 rounded-full border border-black"
+                  style="background-color:#<?php echo $couleurHex; ?>"></span>
 
-        <!-- Checkbox -->
-        <div class="flex items-center w-10">
-            <input 
-                type="checkbox"
-                class="h-5 w-5 rounded border-2 border-gray-500 accent-blue-600"
-                <?php if ($item['est_complete'] == 1) echo "checked"; ?>>
+            <h2 class="text-2xl font-semibold text-white">
+                <?php echo $arrListe['nom']; ?> 
+                <span class="text-white">(<?php echo $nbItems; ?>)</span>
+            </h2>
         </div>
 
-        <!-- Nom + description -->
-        <div class="flex-1 pr-4">
-            <p class="font-semibold text-gray-900">
-                <?php echo $item['nom']; ?>
-            </p>
+        <!-- Liste des items : chaque item = une box séparée, en colonne -->
+        <div class="mt-6 flex flex-col gap-4">
 
-            <p class="text-gray-700 leading-snug text-sm">
-                Je suis une tâche à compléter et<br>
-                qui pourrait être longue à effectuer
-            </p>
+        <?php 
+        for ($i = 0; $i < count($arrItems); $i++) {
+
+            $item = $arrItems[$i];
+
+            if ($item['echeance'] != '' && $item['echeance'] != NULL) {
+                $t = strtotime($item['echeance']);
+                $strEcheance = date("H\hi/d/m/Y", $t);
+            } else {
+                $strEcheance = "—";
+            }
+        ?>
+
+            <!-- BOX D’UN ITEM -->
+            <div class="bg-[#D1C2FF] border border-gray-300 shadow-sm rounded-md px-6 py-4 flex items-stretch text-sm">
+
+                <!-- Checkbox -->
+                <div class="flex items-center w-10">
+                    <input 
+                        type="checkbox"
+                        class="h-5 w-5 rounded border-2 border-gray-500 accent-blue-600"
+                        <?php if ($item['est_complete'] == 1) echo "checked"; ?>>
+                </div>
+
+                <!-- Nom + description -->
+                <div class="flex-1 pr-4 items-center">
+                    <p class="font-semibold text-gray-900">
+                        <?php echo $item['nom']; ?>
+                    </p>
+        </div>
+           <div class="flex-1 pr-4">
+                    <p class="text-gray-700 leading-snug text-sm">
+                        Je suis une tâche à compléter et<br>
+                        qui pourrait être longue à effectuer
+                    </p>
+                </div>
+
+                <!-- Échéance -->
+                <div class="flex items-center w-40 text-gray-900 font-medium">
+                    <?php echo $strEcheance; ?>
+                </div>
+
+                <!-- Actions (mêmes SVG que l'accueil) -->
+                <div class="flex items-center justify-end w-48 gap-6">
+
+                    <a href="<?php echo $niveau; ?>items/modifier.php?id_item=<?php echo $item['id']; ?>&id_liste=<?php echo $arrListe['id']; ?>" 
+                    class="flex items-center gap-1 hover:underline hover:text-[#FF66D6]">
+                        <img src="<?php echo $niveau; ?>liaisons/images/icons/edit.svg" class="w-6" alt=""> 
+                        Modifier
+                    </a>
+
+                    <a href="<?php echo $niveau; ?>items/supprimer.php?id_item=<?php echo $item['id']; ?>&id_liste=<?php echo $arrListe['id']; ?>" 
+                    class="flex items-center gap-1 hover:underline hover:text-[#FF66D6]">
+                        <img src="<?php echo $niveau; ?>liaisons/images/icons/remove.svg" class="w-5" alt=""> 
+                        Supprimer
+                    </a>
+
+                </div>
+
+            </div>
+        <?php } ?>
+
         </div>
 
-        <!-- Échéance -->
-        <div class="flex items-center w-40 text-gray-900 font-medium">
-            <?php echo $strEcheance; ?>
-        </div>
+        <!-- Bouton Ajouter -->
 
-        <!-- Actions (mêmes SVG que l'accueil) -->
-        <div class="flex items-center justify-end w-48 gap-6">
-
-            <a href="<?php echo $niveau; ?>items/modifier.php?id_item=<?php echo $item['id']; ?>&id_liste=<?php echo $arrListe['id']; ?>" 
-               class="flex items-center gap-1 hover:underline hover:text-[#FF66D6]">
-                <img src="<?php echo $niveau; ?>liaisons/images/icons/edit.svg" class="w-6" alt=""> 
-                Modifier
-            </a>
-
-            <a href="<?php echo $niveau; ?>items/supprimer.php?id_item=<?php echo $item['id']; ?>&id_liste=<?php echo $arrListe['id']; ?>" 
-               class="flex items-center gap-1 hover:underline hover:text-[#FF66D6]">
-                <img src="<?php echo $niveau; ?>liaisons/images/icons/remove.svg" class="w-5" alt=""> 
-                Supprimer
-            </a>
-
-        </div>
-
-    </div>
-
-    <?php } ?>
-
-    <!-- Bouton Ajouter -->
-        <form action="items/ajouter.php" method="GET">
+                <form class="flex justify-center py-6" action="itemps/ajouter.php" method="GET">
             <input 
                 type="submit" 
                 name="btn_nouveau" 
-                value="Ajouter une liste"
+                value="Ajouter un item"
                 class="px-6 py-3 bg-pink-400 hover:bg-pink-500 text-black font-semibold rounded-lg cursor-pointer shadow"
             >
         </form>
 
-</section>
+    <?php
+    } // fin else
+    ?>
 
-<?php
-} // fin else
-?>
+    </div> <!-- /.max-w-5xl -->
 
 </main>
 
@@ -197,4 +206,3 @@ else {
 
 </body>
 </html>
-
