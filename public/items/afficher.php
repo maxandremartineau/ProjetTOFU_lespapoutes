@@ -18,6 +18,48 @@ if ($strIdListe == 0) {
     $strMessage = "Aucune liste reçue.";
 }
 
+
+   /// traitement supprimer et checked
+
+if ($strMessage == '' && isset($_GET['action']) && isset($_GET['id_item'])) {
+
+    $intIdItem = intval($_GET['id_item']);
+    $strAction = $_GET['action'];
+
+    // Supprimer un item
+    if ($strAction == 'supprimer') {
+
+        $strRequete = "
+            DELETE FROM items
+            WHERE id = $intIdItem
+              AND liste_id = $strIdListe
+        ";
+        $pdoConnexion->exec($strRequete);
+    }
+
+    // checked est_complete 
+    if ($strAction == 'toggle') {
+
+        $intEstComplete = 0;
+
+        if (isset($_GET['est_complete'])) {
+            $intEstComplete = intval($_GET['est_complete']);
+        }
+
+        if ($intEstComplete != 0) {
+            $intEstComplete = 1;
+        }
+
+        $strRequete = "
+            UPDATE items
+            SET est_complete = $intEstComplete
+            WHERE id = $intIdItem
+              AND liste_id = $strIdListe
+        ";
+        $pdoConnexion->exec($strRequete);
+    }
+}
+
 // requête liste
 
 if ($strMessage == '') {
@@ -84,6 +126,7 @@ $nbItems = count($arrItems);
     <title>Liste</title>
 </head>
 
+
 <body class="bg-[#383839]" >
 
 <?php include($niveau . "liaisons/inc/fragments/entete.inc.php"); ?>
@@ -93,19 +136,19 @@ $nbItems = count($arrItems);
     <div class="max-w-5xl mx-auto w-full px-4">
 
     <?php
-    // -----------------------------------------------------------
+   
     // Message d’erreur s’il y a lieu
-    // -----------------------------------------------------------
+   
     if ($strMessage != '') {
         echo "<p class='text-center text-red-600 font-bold text-xl mt-10'>$strMessage</p>";
     } 
-    // -----------------------------------------------------------
+
     // Sinon : afficher le titre + les items
-    // -----------------------------------------------------------
+   
     else {
     ?>
 
-        <!-- Bande grise titre (comme un header de section) -->
+        <!-- Bande titre -->
         <div class="flex items-center gap-3 bg-[#463f6b] border-3 border-white/20 px-6 py-4 rounded-md">
             <span class="w-5 h-5 rounded-full border border-black"
                   style="background-color:#<?php echo $couleurHex; ?>"></span>
@@ -116,7 +159,7 @@ $nbItems = count($arrItems);
             </h2>
         </div>
 
-        <!-- Liste des items : chaque item = une box séparée, en colonne -->
+        <!-- Liste des items  -->
         <div class="mt-6 flex flex-col gap-4">
 
         <?php 
@@ -130,38 +173,46 @@ $nbItems = count($arrItems);
             } else {
                 $strEcheance = "—";
             }
+
+            // Valeur à envoyer si on clique sur la checkbox (toggle)
+            $intEstToggle = 1;
+            if ($item['est_complete'] == 1) {
+                $intEstToggle = 0;
+            }
         ?>
 
-            <!-- BOX D’UN ITEM -->
-            <div class="bg-[#D1C2FF] border border-gray-300 shadow-sm rounded-md px-6 py-4 flex items-stretch text-sm">
+            <!-- Box item-->
+            <div class="bg-[#D1C2FF] border border-gray-300 shadow-sm rounded-md px-6 py-4 flex items-stretch text-sm text-black">
 
-                <!-- Checkbox -->
+                <!-- Checkbox (formulaire pour toggle) -->
                 <div class="flex items-center w-10">
-                    <input 
-                        type="checkbox"
-                        class="h-5 w-5 rounded border-2 border-gray-500 accent-blue-600"
-                        <?php if ($item['est_complete'] == 1) echo "checked"; ?>>
+                    <form action="afficher.php" method="GET">
+                        <input type="hidden" name="id_liste" value="<?php echo $arrListe['id']; ?>">
+                        <input type="hidden" name="id_item" value="<?php echo $item['id']; ?>">
+                        <input type="hidden" name="action" value="toggle">
+                        <input type="hidden" name="est_complete" value="<?php echo $intEstToggle; ?>">
+                        <input 
+                            type="checkbox"
+                            class="h-5 w-5 rounded border-2 border-black accent-[#FF66D6]"
+                            <?php if ($item['est_complete'] == 1) echo "checked"; ?>
+                            onchange="this.form.submit()"
+                        >
+                    </form>
                 </div>
 
-                <!-- Nom + description -->
+                <!-- Nom -->
                 <div class="flex-1 pr-4 items-center">
-                    <p class="font-semibold text-gray-900">
+                    <p class="font-semibold">
                         <?php echo $item['nom']; ?>
-                    </p>
-        </div>
-           <div class="flex-1 pr-4">
-                    <p class="text-gray-700 leading-snug text-sm">
-                        Je suis une tâche à compléter et<br>
-                        qui pourrait être longue à effectuer
                     </p>
                 </div>
 
                 <!-- Échéance -->
-                <div class="flex items-center w-40 text-gray-900 font-medium">
+                <div class="flex items-center w-40 font-medium">
                     <?php echo $strEcheance; ?>
                 </div>
 
-                <!-- Actions (mêmes SVG que l'accueil) -->
+                <!-- Actions -->
                 <div class="flex items-center justify-end w-48 gap-6">
 
                     <a href="<?php echo $niveau; ?>items/modifier.php?id_item=<?php echo $item['id']; ?>&id_liste=<?php echo $arrListe['id']; ?>" 
@@ -170,7 +221,7 @@ $nbItems = count($arrItems);
                         Modifier
                     </a>
 
-                    <a href="<?php echo $niveau; ?>items/supprimer.php?id_item=<?php echo $item['id']; ?>&id_liste=<?php echo $arrListe['id']; ?>" 
+                    <a href="afficher.php?id_liste=<?php echo $arrListe['id']; ?>&action=supprimer&id_item=<?php echo $item['id']; ?>" 
                     class="flex items-center gap-1 hover:underline hover:text-[#FF66D6]">
                         <img src="<?php echo $niveau; ?>liaisons/images/icons/remove.svg" class="w-5" alt=""> 
                         Supprimer
@@ -184,21 +235,21 @@ $nbItems = count($arrItems);
         </div>
 
         <!-- Bouton Ajouter -->
-
-                <form class="flex justify-center py-6" action="itemps/ajouter.php" method="GET">
+        <form class="flex justify-center py-6" action="ajouter.php" method="GET">
+            <input type="hidden" name="id_liste" value="<?php echo $arrListe['id']; ?>">
             <input 
                 type="submit" 
                 name="btn_nouveau" 
                 value="Ajouter un item"
-                class="px-6 py-3 bg-pink-400 hover:bg-pink-500 text-black font-semibold rounded-lg cursor-pointer shadow"
+                class="px-6 py-3 bg-pink-400  hover:bg-pink-500 text-black font-semibold rounded-lg  shadow"
             >
         </form>
 
     <?php
-    } // fin else
+    } 
     ?>
 
-    </div> <!-- /.max-w-5xl -->
+    </div>
 
 </main>
 
@@ -206,3 +257,4 @@ $nbItems = count($arrItems);
 
 </body>
 </html>
+
