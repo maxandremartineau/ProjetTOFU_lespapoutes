@@ -68,7 +68,7 @@ if ($strCodeOperation == "supprimer") {
     <?php include($niveau.'liaisons/inc/fragments/entete.inc.php');?>
 </header>
 
-<main>
+
 
 <?php
 //------------------------------------------------------------
@@ -165,13 +165,14 @@ while ($ligne = $pdosResultat->fetch()) {
 $pdosResultat->closeCursor();
 ?>
 
+<main>
 <!-- Bloc échéance -->
 
 <?php if ($totalEcheances > 0) { ?>
 
-<div class="border-3 border-white/20 rounded-lg max-w-5xl mx-auto mt-12 mb-16 overflow-hidden">
+<div class="border-3 border-white/20 max-w-5xl mx-auto mt-12 mb-16 overflow-hidden">
 
-    <div class="flex items-center justify-between bg-[#463f6b] py-8 px-6">
+    <div class="flex items-center justify-between bg-[#463f6b] py-5 px-4">
 
         <h2 class="text-white font-bold text-3xl">Item(s) venant à échéance</h2>
 
@@ -202,7 +203,7 @@ $pdosResultat->closeCursor();
 
 
             <div class="font-semibold">
-                La liste des <?= $item['nom_liste'] ?>
+                La liste <?= $item['nom_liste'] ?>
             </div>
 
             <div>
