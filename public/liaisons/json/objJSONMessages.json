@@ -9,14 +9,14 @@
   "nom_liste": {
     "label": "Nom",
     "erreurs": {
-      "vide": "Entrez un nom pour la liste!",
+      "vide": "Entrez un nom pour la liste",
       "motif": "Minuscules, majuscules, caractères accentués, espace, guillemet simple, trait d'union et #. Maximum 50 caractères."
     }
   },
   "nom_item": {
     "label": "Nom",
     "erreurs": {
-      "vide": "Entrez un nom d'item!",
+      "vide": "Entrez un nom d'item",
       "motif": "Minuscules, majuscules, caractères accentués, espace, guillemet simple, trait d'union et #. Maximum 55 caractères."
     }
   },
@@ -24,13 +24,13 @@
     "label": "Échéance",
     "erreurs": {
       "vide": "Veuillez entrer une date d'échéance complète",
-      "motif": "Cette date d'échéance n'est pas possible! Autant dire la semaine des 4 jeudis ou quand les poules auront des dents?!"
+      "motif": "Cette date d'échéance n'est pas possible. Autant dire la semaine des 4 jeudis ou quand les poules auront des dents"
     }
   },
   "couleurs": {
     "label": "Sélectionnez une couleur",
     "erreurs": {
-      "vide": "SVP associez une couleur à la liste!"
+      "vide": "SVP associez une couleur à la liste"
     }
   },
   "retroactions": {

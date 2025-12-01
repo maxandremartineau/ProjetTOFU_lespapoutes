@@ -173,22 +173,16 @@ $pdosResultat->closeCursor();
 <div class="border-3 border-white/20 max-w-5xl mx-auto mt-12 mb-16 overflow-hidden">
 
     <div class="flex items-center justify-between bg-[#463f6b] py-5 px-4">
-
         <h2 class="text-white font-bold text-3xl">Item(s) venant à échéance</h2>
 
-        <!-- LOGO + BULLE ROUGE -->
         <div class="relative inline-block">
             <img src="liaisons/images/icons/echeanceBlanc.svg" class="w-10 h-auto" alt="Logo échéance">
-            <span class="absolute -top-1 -right-1 
-                         bg-red-600 text-white text-xs font-bold 
-                         rounded-full w-6 h-6 flex items-center justify-center shadow-lg">
+            <span class="absolute -top-1 -right-1 bg-red-600 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center shadow-lg">
                 <?php echo $totalEcheances; ?>
             </span>
         </div>
-
     </div>
 
-    <!-- LISTE DES ITEMS -->
     <div class="flex flex-col">
 
         <?php while ($item = $pdosEcheances->fetch()) {
@@ -198,9 +192,7 @@ $pdosResultat->closeCursor();
 
         ?>
 
-        <!-- UN ITEM -->
-        <div class="flex justify-between bg-[#D1C2FF] text-black p-4 w-full">
-
+        <div class="flex flex-col md:flex-row md:justify-between bg-[#D1C2FF] text-black p-4 w-full gap-2 md:gap-0">
 
             <div class="font-semibold">
                 La liste <?= $item['nom_liste'] ?>
@@ -228,7 +220,8 @@ $pdosResultat->closeCursor();
 
 
 
-<div class="max-w-5xl mx-auto w-full mt-8 px-4">
+
+<div class="max-w-5xl mx-auto w-full m-8 px-4">
 
     <div class="flex flex-col items-center text-center
                 sm:flex-row sm:items-center sm:justify-between sm:text-left gap-4">
@@ -254,42 +247,48 @@ $pdosResultat->closeCursor();
 
 <form action="index.php" method="GET">
 
-<ul class="text-white">
+<ul class="text-white space-y-6">
 
 <?php
 for ($intCptListes = 0; $intCptListes < count($arrListes); $intCptListes++) {
 
     $idListe = $arrListes[$intCptListes]["id"];
     $nomListe = $arrListes[$intCptListes]["nom"];
-    $couleur = $arrListes[$intCptListes]["couleur_id"];
     $couleurHex = $arrListes[$intCptListes]["couleur_hex"];
     $nbItems = $arrListes[$intCptListes]["nb_items"];
 
     echo "
-    <li class='bg-[#463f6b] border-3 border-white/20 py-8 px-6 flex items-center justify-between m-8 max-w-5xl mx-auto relative'>
+    <li class='bg-[#463f6b] border-3 border-white/20 py-6 px-6 flex flex-col items-center sm:flex-row sm:items-center sm:justify-between max-w-[420px] sm:max-w-5xl mx-auto rounded-xl relative'>
 
-        <div class='flex items-center gap-3'>
-            <span class='w-3 h-3 rounded-full' style='background-color: #$couleurHex;'></span>
-            <h2 class='font-semibold '>$nomListe ($nbItems)</h2>
-            <a href='" . $niveau . "items/afficher.php?id_liste=$idListe' class='absolute inset-0 z-0'></a>
+        <div class='flex items-center gap-3 mb-4 sm:mb-0'>
+            <span class='w-4 h-4 rounded-full' style='background-color: #$couleurHex;'></span>
+            <h2 class='font-semibold text-white text-lg'>$nomListe ($nbItems)</h2>
         </div>
 
-        <div class='flex items-center gap-6 relative'>
-            <a href='". $niveau ."listes/modifier.php?id_liste=$idListe' class='flex items-center gap-1 hover:underline hover:text-[#FF66D6]'>
-                <img src='liaisons/images/icons/edit.svg' class='w-6 hover:text-[#FF66D6]' alt=''> Modifier
+        <div class='flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 relative text-white text-sm z-10'>
+
+            <a href='". $niveau ."listes/modifier.php?id_liste=$idListe' class='flex items-center gap-2 hover:underline hover:text-[#FF66D6] px-6 py-3 rounded-lg text-base font-semibold w-full sm:w-auto justify-center relative z-20' style='min-width: 120px;'>
+                <img src='liaisons/images/icons/edit.svg' class='w-6 h-6' alt='Modifier'> Modifier
             </a>
-            <div class='hover:underline hover:text-[#FF66D6] relative'>
-                <a href='#' class='flex items-center gap-1 btnOuvrirModaleSupp' data-id='$idListe'>
-                    <img src='liaisons/images/icons/remove.svg' class='w-5' alt=''> Supprimer
-                </a>
-            </div>
+
+            <a href='#' class='flex items-center gap-2 hover:underline hover:text-[#FF66D6] px-6 py-3 rounded-lg text-base font-semibold w-full sm:w-auto justify-center btnOuvrirModaleSupp relative z-20' data-id='$idListe' style='min-width: 120px;'>
+                <img src='liaisons/images/icons/remove.svg' class='w-6 h-6' alt='Supprimer'> Supprimer
+            </a>
+
         </div>
+
+        <!-- Overlay link for entire list item -->
+        <a href='" . $niveau . "items/afficher.php?id_liste=$idListe' class='absolute inset-0 z-0'></a>
 
     </li>";
 }
 ?>
 
 </ul>
+
+
+
+
 </form>
 
 </main>

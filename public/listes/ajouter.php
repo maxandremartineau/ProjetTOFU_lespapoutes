@@ -10,6 +10,45 @@ $strMessage = "";
 $arrListe = array();
 $arrErreurs = array();
 
+
+// -----------------------------
+// Charger messages d'erreur JSON 
+// -----------------------------
+
+// Chemin du fichier JSON
+$strCheminJSON = __DIR__ . "/../liaisons/json/objJSONMessages.json";
+
+// Lecture du fichier JSON
+$strJSON = file_get_contents(
+    $strCheminJSON,   // string $filename
+    false,            // bool $use_include_path
+    null,             // ?resource $context
+    0,                // int $offset
+    null              // ?int $length
+);
+
+// Conversion du JSON en tableau
+$arrMessages = json_decode($strJSON, true);
+
+// Sécurité si le JSON n'est pas valide
+if (!is_array($arrMessages)) {
+    $arrMessages = array();
+}
+
+// Variables arrChampErreur et arrMessagesErreur
+$arrChampErreur = array();
+$arrMessagesErreur = array();
+
+// Transférer les messages depuis le JSON vers arrMessagesErreur
+foreach ($arrChampErreur as $champTemp) {
+    if (isset($arrMessages[$champTemp])) {
+        $arrMessagesErreur[$champTemp] = $arrMessages[$champTemp];
+    } else {
+        $arrMessagesErreur[$champTemp] = "";
+    }
+}
+
+
 // --------------------
 // DÉTERMINER L'OPÉRATION
 // --------------------
@@ -33,26 +72,36 @@ $pdosResultat->closeCursor();
 // ------------------------------
 // FONCTION DE VALIDATION
 // ------------------------------
-function validerListe(&$arrListe, &$arrErreurs) {
+function validerListe($arrListe, $arrMessages) {
+    $arrErreurs = array();
+    
     // --------------------
     // Nom de la liste
     // --------------------
     if (!isset($arrListe["nom"]) || trim($arrListe["nom"]) === "") {
-        $arrErreurs["nom"] = "Le nom de la liste est obligatoire.";
+        $arrErreurs["nom"] = $arrMessages["nom_liste"]["erreurs"]["vide"];
+    } else {
+        // Validation du motif avec regex
+        if (preg_match('/^[a-zA-Zà-ÿ0-9 \'\-#]{1,55}$/', $arrListe["nom"])) {
+            // Regex matches - validation passed, no error
+        } else {
+            // Regex doesn't match - show error
+            $arrErreurs["nom"] = $arrMessages["nom_liste"]["erreurs"]["motif"];
+        }
     }
 
     // --------------------
     // Couleur
     // --------------------
     if (!isset($arrListe["couleur_id"]) || trim($arrListe["couleur_id"]) === "" || $arrListe["couleur_id"] === "0") {
-        $arrErreurs["couleur_id"] = "Vous devez sélectionner une couleur.";
+        $arrErreurs["couleur_id"] = $arrMessages["couleurs"]["erreurs"]["vide"];
     } else {
         // Vérification que c'est bien un nombre
         $valeur = $arrListe["couleur_id"];
         $nombreValide = true;
 
-        for ($i = 0; $i < strlen($valeur); $i++) {
-            if ($valeur[$i] < '0' || $valeur[$i] > '9') {
+        for ($intCptNombre = 0; $intCptNombre < strlen($valeur); $intCptNombre++) {
+            if ($valeur[$intCptNombre] < '0' || $valeur[$intCptNombre] > '9') {
                 $nombreValide = false;
                 break;
             }
@@ -63,19 +112,19 @@ function validerListe(&$arrListe, &$arrErreurs) {
         } else {
             // Conversion manuelle en entier
             $nombre = 0;
-            for ($i = 0; $i < strlen($valeur); $i++) {
-                $nombre = $nombre * 10 + ($valeur[$i] - '0');
+            for ($intCpt = 0; $intCpt < strlen($valeur); $intCpt++) {
+                $nombre = $nombre * 10 + ($valeur[$intCpt] - '0');
             }
             $arrListe["couleur_id"] = $nombre;
             
             // Additional check: make sure it's a valid color ID (greater than 0)
             if ($nombre <= 0) {
-                $arrErreurs["couleur_id"] = "Vous devez sélectionner une couleur.";
+                $arrErreurs["couleur_id"] = $arrMessages["couleurs"]["erreurs"]["vide"];
             }
         }
     }
 
-    return count($arrErreurs) === 0;
+    return $arrErreurs;
 }
 
 // ------------------------------
@@ -101,45 +150,64 @@ if ($strCodeOperation == "ajouter") {
     // --------------------
     // Validation
     // --------------------
-    $ok = validerListe($arrListe, $arrErreurs);
+    $arrErreurs = validerListe($arrListe, $arrMessages);
+    $ok = (count($arrErreurs) === 0);
 
     if ($ok) {
         // --------------------
         // Requête d'insertion
         // --------------------
         $strRequeteInsert = "
-            INSERT INTO listes (nom, couleur_id)
-            VALUES (
-                '".$arrListe["nom"]."',
-                ".$arrListe["couleur_id"]."
-            )
+            INSERT INTO listes (nom, couleur_id, utilisateur_id)
+            VALUES (:nom, :couleur_id, :utilisateur_id)
         ";
 
-        $pdoConnexion->query($strRequeteInsert);
-        $strCodeErreur = $pdoConnexion->errorCode();
+        $pdosInsert = $pdoConnexion->prepare($strRequeteInsert);
+        $success = $pdosInsert->execute([
+            ':nom' => $arrListe["nom"], 
+            ':couleur_id' => $arrListe["couleur_id"],
+            ':utilisateur_id' => 1
+        ]);
+        $strCodeErreur = $pdosInsert->errorCode();
 
         if ($strCodeErreur != "00000") {
             $strMessage = "Erreur lors de l’ajout de la liste.";
         } else {
             $strMessage = "Liste ajoutée avec succès !";
-            // Réinitialiser le formulaire
-            $arrListe["nom"] = "";
-            $arrListe["couleur_id"] = "";
+
+            // Redirection vers l'accueil
+            $strURLRedirection = "../index.php";
+
+            // Envoyer l'en-tête de redirection
+            header("Location: " . $strURLRedirection);
+
+            // Arrêter l'exécution du script pour éviter tout affichage
+            exit();
+
         }
     } else {
-        // Montre les deux messages si c'est vide
-        $messages = array();
-        if (isset($arrErreurs["nom"])) {
-            $messages[] = $arrErreurs["nom"];
-        }
-        if (isset($arrErreurs["couleur_id"])) {
-            $messages[] = $arrErreurs["couleur_id"];
-        }
-        $strMessage = implode(" ", $messages);
+        // Individual field errors will be displayed in their respective zones
+        // No general message needed
     }
 }
 
 ?>
+
+<!-- création btn radio accessible -->
+<style>
+.couleurRadioInvisible {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+</style>
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -148,6 +216,21 @@ if ($strCodeOperation == "ajouter") {
     <?php require_once($niveau.'liaisons/inc/fragments/head_links.inc.php');?>
     <title>Ajouter une liste</title>
 </head>
+
+<!-- Ajout de javaScript pour l'execution de l'accesibilité btn radio -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    var radios = document.getElementsByClassName("couleurRadio");
+
+    for (var intCpt = 0; intCpt < radios.length; intCpt++) {
+        if (!radios[intCpt].classList.contains("couleurRadioInvisible")) {
+            radios[intCpt].classList.add("couleurRadioInvisible");
+        }
+    }
+});
+</script>
+
+
 <body class="bg-[#383839]">
 
 <header>
@@ -158,13 +241,28 @@ if ($strCodeOperation == "ajouter") {
 
     <h1 class="font-bold text-4xl md:text-5xl text-center md:text-left py-6">Ajouter une liste</h1>
 
-    <?php if($strMessage != "" && (strpos($strMessage, 'succès') !== false || strpos($strMessage, 'Erreur') !== false)): ?>
-        <div class="mb-6 p-4 rounded-lg <?= (strpos($strMessage, 'succès') !== false) ? 'bg-green-200 text-green-800' : 'bg-red-200 text-red-800' ?>">
+    <?php 
+    if ($strMessage != "") { 
+
+        // Déterminer la classe de couleur selon le type de message
+        $classeCouleur = "";
+        if (strpos($strMessage, "succès") !== false) {
+            $classeCouleur = "bg-green-200 text-green-800";
+        } else {
+            $classeCouleur = "bg-red-200 text-red-800";
+        }
+        ?>
+        
+        <div class="mb-6 p-4 rounded-lg <?php echo $classeCouleur; ?>">
             <p class="text-center text-lg font-semibold">
-                <?= $strMessage ?>
+                <?php echo $strMessage; ?>
             </p>
         </div>
-    <?php endif; ?>
+
+    <?php 
+    } 
+    ?>
+
 
     <form action="#" method="GET" class="space-y-10">
 
@@ -190,8 +288,8 @@ if ($strCodeOperation == "ajouter") {
             <label class="text-xl font-semibold text-black">Couleur du thème</label>
             <div class="flex flex-wrap gap-6 mt-6">
                 <?php 
-                for ($i = 0; $i < count($arrCouleurs); $i++) {
-                    $c = $arrCouleurs[$i];
+                for ($intCpt = 0; $intCpt < count($arrCouleurs); $intCpt++) {
+                    $couleurs = $arrCouleurs[$intCpt];
                     $checked = "";
                     if (isset($arrListe["couleur_id"]) && $arrListe["couleur_id"] == $c["id"]) {
                         $checked = "checked";
@@ -201,15 +299,16 @@ if ($strCodeOperation == "ajouter") {
                         <input 
                             type="radio" 
                             name="couleur_id" 
-                            value="<?php echo $c['id']; ?>" 
-                            class="hidden peer couleurRadio"
-                            data-hex="<?php echo $c['hexadecimal']; ?>"
+                            value="<?php echo $couleurs['id']; ?>" 
+                            class="peer couleurRadio couleurRadioInvisible"
+                            data-hex="<?php echo $couleurs['hexadecimal']; ?>"
                             <?php echo $checked; ?>
                         />
+
                         <div 
                             class="w-12 h-12 rounded-full peer-checked:ring-4 peer-checked:ring-black transition"
-                            style="background:#<?php echo $c['hexadecimal']; ?>;"
-                            title="<?php echo $c['nom_fr']; ?>"
+                            style="background:#<?php echo $couleurs['hexadecimal']; ?>;"
+                            title="<?php echo $couleurs['nom_fr']; ?>"
                         ></div>
                     </label>
                 <?php } ?>

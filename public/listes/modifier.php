@@ -2,9 +2,42 @@
 require_once('../liaisons/inc/config.inc.php');
 $niveau="../";
 
+// --------------------
+// INITIALISATION
+// --------------------
 $strCodeOperation = "";
 $strMessage = "";
 $arrListe = array();
+$arrErreurs = array();
+
+// -----------------------------
+// Charger messages d'erreur JSON 
+// -----------------------------
+
+// Chemin du fichier JSON
+$strCheminJSON = __DIR__ . "/../liaisons/json/objJSONMessages.json";
+
+// Lecture du fichier JSON
+$strJSON = file_get_contents(
+    $strCheminJSON,   // string $filename
+    false,            // bool $use_include_path
+    null,             // ?resource $context
+    0,                // int $offset
+    null              // ?int $length
+);
+
+// Conversion du JSON en tableau
+$arrMessages = json_decode($strJSON, true);
+
+// Sécurité si le JSON n'est pas valide
+if (!is_array($arrMessages)) {
+    $arrMessages = array();
+}
+
+// Sécurité si le JSON n'est pas valide
+if (!is_array($arrMessages)) {
+    $arrMessages = array();
+}
 
 // ------------------------------
 // DÉTERMINER L'OPÉRATION
@@ -22,6 +55,37 @@ $strRequeteCouleurs = "SELECT id, nom_fr, hexadecimal FROM couleurs";
 $pdosResultat = $pdoConnexion->query($strRequeteCouleurs);
 $arrCouleurs = $pdosResultat->fetchAll();
 $pdosResultat->closeCursor();
+
+// ------------------------------
+// FONCTION DE VALIDATION
+// ------------------------------
+function validerListe($arrListe, $arrMessages) {
+    $arrErreurs = array();
+    
+    // --------------------
+    // Nom de la liste
+    // --------------------
+    if (!isset($arrListe["nom"]) || trim($arrListe["nom"]) === "") {
+        $arrErreurs["nom"] = $arrMessages["nom_liste"]["erreurs"]["vide"];
+    } else {
+        // Validation du motif avec regex
+        if (preg_match('/^[a-zA-Zà-ÿ0-9 \'\-#]{1,55}$/', $arrListe["nom"])) {
+            // Regex matches - validation passed, no error
+        } else {
+            // Regex doesn't match - show error
+            $arrErreurs["nom"] = $arrMessages["nom_liste"]["erreurs"]["motif"];
+        }
+    }
+
+    // --------------------
+    // Couleur
+    // --------------------
+    if (!isset($arrListe["couleur_id"]) || trim($arrListe["couleur_id"]) === "" || $arrListe["couleur_id"] === "0") {
+        $arrErreurs["couleur_id"] = $arrMessages["couleurs"]["erreurs"]["vide"];
+    }
+
+    return $arrErreurs;
+}
 
 // ------------------------------
 // AFFICHER LES DONNÉES ACTUELLES
@@ -71,17 +135,25 @@ if ($strCodeOperation == "modifier" && $idListe > 0) {
         $arrListe['nom'] = trim($_GET['nom_liste']);
     }
 
-    $arrListe['couleur_id'] = 0;
+    $arrListe['couleur_id'] = "";
     if (isset($_GET['couleur_id'])) {
-        $arrListe['couleur_id'] = intval($_GET['couleur_id']);
+        $arrListe['couleur_id'] = $_GET['couleur_id'];
     }
 
-    // Validation simple
-    if ($arrListe['nom'] === "") {
-        $strMessage = "Le nom de la liste ne peut pas être vide.";
-    } else if ($arrListe['couleur_id'] === 0) {
-        $strMessage = "Veuillez sélectionner une couleur pour la liste.";
-    } else {
+    // --------------------
+    // Validation
+    // --------------------
+    $arrErreurs = validerListe($arrListe, $arrMessages);
+    $ok = (count($arrErreurs) === 0);
+
+    // Debug: Show what we received
+    if (!empty($arrListe['nom']) || !empty($arrListe['couleur_id'])) {
+        $strMessage = "Debug: Nom='" . htmlspecialchars($arrListe['nom']) . "', Couleur='" . $arrListe['couleur_id'] . "', Erreurs=" . count($arrErreurs);
+    }
+
+    if ($ok) {
+        // Convert color_id to integer after successful validation
+        $arrListe['couleur_id'] = intval($arrListe['couleur_id']);
 
         $strRequeteUpdate = "
             UPDATE listes
@@ -90,20 +162,39 @@ if ($strCodeOperation == "modifier" && $idListe > 0) {
         ";
 
         $pdosResultat = $pdoConnexion->prepare($strRequeteUpdate);
-        $pdosResultat->bindValue(':nom', $arrListe['nom']);
-        $pdosResultat->bindValue(':couleur_id', $arrListe['couleur_id']);
-        $pdosResultat->bindValue(':id_liste', $idListe);
-        $pdosResultat->execute();
-        $strCodeErreur = $pdoConnexion->errorCode();
+        $success = $pdosResultat->execute([
+            ':nom' => $arrListe['nom'],
+            ':couleur_id' => $arrListe['couleur_id'],
+            ':id_liste' => $idListe
+        ]);
+        $strCodeErreur = $pdosResultat->errorCode();
 
         if ($strCodeErreur != "00000") {
             $strMessage = "Erreur lors de la modification de la liste.";
         } else {
             $strMessage = "Liste modifiée avec succès !";
+            // Rediriger vers la page principale après succès
+            header("Location: ../index.php");
+            exit;
         }
     }
 }
 ?>
+
+<!-- création btn radio accessible -->
+<style>
+.couleurRadioInvisible {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+</style>
 
 <!DOCTYPE html>
 <html lang="fr">
@@ -113,6 +204,21 @@ if ($strCodeOperation == "modifier" && $idListe > 0) {
     <?php require_once($niveau.'liaisons/inc/fragments/head_links.inc.php'); ?>
     <title>Modifier la liste</title>
 </head>
+
+<!-- Ajout de javaScript pour l'execution de l'accesibilité btn radio -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    var radios = document.getElementsByClassName("couleurRadio");
+
+    for (var i = 0; i < radios.length; i++) {
+        if (!radios[i].classList.contains("couleurRadioInvisible")) {
+            radios[i].classList.add("couleurRadioInvisible");
+        }
+    }
+});
+</script>
+
+
 <body class="bg-[#383839]">
 
 <header>
@@ -145,9 +251,13 @@ if ($strCodeOperation == "modifier" && $idListe > 0) {
                 value="<?= htmlspecialchars($arrListe['nom']) ?>"
                 class="mt-2 w-full p-4 rounded-xl border border-gray-400 shadow-sm bg-white"
             />
+            <?php if (isset($arrErreurs["nom"])) { ?>
+                <div class="mt-2 p-2 bg-red-100 border border-red-400 text-red-700 rounded">
+                    <span class="text-sm font-medium"><?php echo $arrErreurs["nom"]; ?></span>
+                </div>
+            <?php } ?>
         </div>
 
-        <!-- Couleur -->
         <!-- Couleur -->
         <div>
             <label class="text-xl font-semibold text-black">Couleur du thème</label>
@@ -171,12 +281,17 @@ if ($strCodeOperation == "modifier" && $idListe > 0) {
                         />
                         <div 
                             class="w-12 h-12 rounded-full peer-checked:ring-4 peer-checked:ring-black transition"
-                            style="background:#<?php echo $couleur['hexadecimal']; ?>;"
+                            style="background-color: #<?php echo $couleur['hexadecimal']; ?>;"
                             title="<?php echo $couleur['nom_fr']; ?>"
                         ></div>
                     </label>
                 <?php } ?>
             </div>
+            <?php if (isset($arrErreurs["couleur_id"])) { ?>
+                <div class="mt-2 p-2 bg-red-100 border border-red-400 text-red-700 rounded">
+                    <span class="text-sm font-medium"><?php echo $arrErreurs["couleur_id"]; ?></span>
+                </div>
+            <?php } ?>
         </div>
 
 
