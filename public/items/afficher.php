@@ -174,7 +174,7 @@ $nbItems = count($arrItems);
                 $strEcheance = "—";
             }
 
-            // Valeur à envoyer si on clique sur la checkbox (toggle)
+            // Valeur à envoyer si on clique sur la checkbox 
             $intEstToggle = 1;
             if ($item['est_complete'] == 1) {
                 $intEstToggle = 0;
@@ -221,8 +221,9 @@ $nbItems = count($arrItems);
                         Modifier
                     </a>
 
+                    <!-- IMPORTANT : href = URL de suppression originale -->
                     <a href="afficher.php?id_liste=<?php echo $arrListe['id']; ?>&action=supprimer&id_item=<?php echo $item['id']; ?>" 
-                    class="flex items-center gap-1 hover:underline hover:text-[#FF66D6]">
+                    class="flex items-center gap-1 btnOuvrirModaleSupp hover:underline hover:text-[#FF66D6]">
                         <img src="<?php echo $niveau; ?>liaisons/images/icons/remove.svg" class="w-5" alt=""> 
                         Supprimer
                     </a>
@@ -253,7 +254,98 @@ $nbItems = count($arrItems);
 
 </main>
 
+<!-- MODALE DE SUPPRESSION -->
+
+<dialog id="modalSuppression" class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-lg rounded-2xl p-0 shadow-2xl backdrop:bg-black/70">
+
+    <form method="dialog" class="bg-[#D1C2FF] p-10 rounded-2xl text-black">
+
+        <h3 class="text-3xl font-bold mb-6 text-center">
+            Confirmer la suppression
+        </h3>
+
+        <p class="text-center text-black/90 mb-10 text-lg leading-relaxed">
+            Voulez-vous vraiment supprimer cet item ?<br>
+            Cette action est irréversible.
+        </p>
+
+        <!-- URL DE SUPPRESSION -->
+        <input type="hidden" id="urlSuppression" value="">
+
+        <div class="flex flex-col gap-4">
+
+            <!-- Bouton supprimer (rose) -->
+            <button 
+                id="btnConfirmerSuppression"
+                class="w-full bg-[#FF66D6] hover:bg-pink-500 text-black font-semibold py-3 rounded-xl shadow-lg text-lg">
+                Supprimer
+            </button>
+
+            <!-- Bouton annuler -->
+            <button 
+                type="button"
+                id="btnAnnulerSuppression"
+                class="w-full bg-[#383839] hover:bg-[#5b5386] text-white font-semibold py-3 rounded-xl shadow-lg text-lg">
+                Annuler
+            </button>
+        </div>
+
+    </form>
+
+</dialog>
+
 <?php include($niveau . "liaisons/inc/fragments/pied_de_page.inc.php"); ?>
+
+
+<script>
+/* Ouvrir la modale depuis chaque lien Supprimer */
+document.querySelectorAll('.btnOuvrirModaleSupp').forEach(btn => {
+
+    btn.addEventListener('click', function(e) {
+        e.preventDefault();
+
+        // On récupère l’URL de suppression réelle (href)
+        const url = this.getAttribute('href');
+
+        // On la stocke dans le champ hidden
+        document.getElementById('urlSuppression').value = url;
+
+        // Ouvrir la modale
+        const dialogue = document.getElementById('modalSuppression');
+        if (typeof dialogue.showModal === 'function') {
+            dialogue.showModal();
+        } else {
+            window.location.href = url;
+        }
+    });
+});
+
+/* Confirmer la suppression */
+document.getElementById('btnConfirmerSuppression').addEventListener('click', function(e){
+    e.preventDefault();
+    const url = document.getElementById('urlSuppression').value;
+    window.location.href = url;
+});
+
+/* Annuler */
+document.getElementById('btnAnnulerSuppression').addEventListener('click', function(e){
+    e.preventDefault();
+    const dialogue = document.getElementById('modalSuppression');
+    if (typeof dialogue.close === 'function') dialogue.close();
+});
+
+/* Fermer la modale en cliquant à l’extérieur */
+document.getElementById('modalSuppression').addEventListener('click', function(e){
+    const rect = this.getBoundingClientRect();
+    const inside =
+        e.clientX >= rect.left &&
+        e.clientX <= rect.right &&
+        e.clientY >= rect.top &&
+        e.clientY <= rect.bottom;
+
+    if (!inside && typeof this.close === 'function') this.close();
+});
+</script>
 
 </body>
 </html>

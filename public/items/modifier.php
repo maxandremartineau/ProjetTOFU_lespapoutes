@@ -2,63 +2,52 @@
 $niveau = "../";
 include($niveau . 'liaisons/inc/config.inc.php');
 
-$strMessage = '';
-$arrListe   = array();
-$arrItem    = array();
+$strMessage  = '';
+$errNom      = '';
+$errDate     = '';
+$blnModifie  = false;
 
-$couleurHex = '999999';
-
-$strNomItem = '';
-$intAnnee = 0;
-$intMois  = 0;
-$intJour  = 0;
+$strNomItem  = '';
+$intAnnee    = 0;
+$intMois     = 0;
+$intJour     = 0;
 $chkEcheance = false;
 
-$errNom  = '';
-$errDate = '';
-$blnModificationEffectuee = false;
+$arrListe    = array();
+$arrItem     = array();
+
+$couleurHex  = '999999';
+$nbItems     = 0;
 
 
-//  Id liste + item
-if (isset($_GET['id_item'])) {
-    $idItem = intval($_GET['id_item']);
-} else {
-    $idItem = 0;
-}
+// Charger les messages du JSON
+$strJSON = file_get_contents($niveau . "liaisons/json/objJSONMessages.json");
+$arrMessages = json_decode($strJSON, true);
 
+
+// --------------------------
+//  ID LISTE + ID ITEM
+// --------------------------
 if (isset($_GET['id_liste'])) {
     $idListe = intval($_GET['id_liste']);
 } else {
     $idListe = 0;
 }
 
-if ($idItem == 0 || $idListe == 0) {
-    $strMessage = "Données manquantes.";
+if (isset($_GET['id_item'])) {
+    $idItem = intval($_GET['id_item']);
+} else {
+    $idItem = 0;
+}
+
+if ($idListe == 0 || $idItem == 0) {
+    $strMessage = "Paramètres invalides.";
 }
 
 
-
-// item
-
-if ($strMessage == '') {
-
-    $strRequete = "
-        SELECT id, nom, echeance, est_complete, liste_id
-        FROM items
-        WHERE id = $idItem
-    ";
-
-    $pdos = $pdoConnexion->query($strRequete);
-    $arrItem = $pdos->fetch();
-    $pdos->closeCursor();
-
-    if (!$arrItem) {
-        $strMessage = "Item introuvable.";
-    }
-}
-
-//  Liste
-
+// --------------------------
+//  CHARGER LA LISTE
+// --------------------------
 if ($strMessage == '') {
 
     $strRequete = "
@@ -77,40 +66,77 @@ if ($strMessage == '') {
 }
 
 
-//  couleur
+// --------------------------
+//  COULEUR + NB ITEMS
+// --------------------------
 if ($strMessage == '') {
 
-    $strRequete = "SELECT hexadecimal FROM couleurs WHERE id = " . $arrListe['couleur_id'];
+    // Couleur
+    $strRequete = "
+        SELECT hexadecimal
+        FROM couleurs
+        WHERE id = " . $arrListe['couleur_id']
+    ;
 
     $pdos = $pdoConnexion->query($strRequete);
     $ligneCouleur = $pdos->fetch();
     $pdos->closeCursor();
 
-    if ($ligneCouleur && isset($ligneCouleur['hexadecimal'])) {
-        $couleurHex = $ligneCouleur['hexadecimal'];
+    if ($ligneCouleur && isset($ligneCouleur["hexadecimal"])) {
+        $couleurHex = $ligneCouleur["hexadecimal"];
+    }
+
+    // Nb items
+    $strRequete = "
+        SELECT COUNT(*) 
+        FROM items
+        WHERE liste_id = $idListe
+    ";
+
+    $pdos = $pdoConnexion->query($strRequete);
+    $ligneCount = $pdos->fetch();
+    $pdos->closeCursor();
+
+    if ($ligneCount) {
+        $nbItems = $ligneCount["COUNT(*)"];
     }
 }
 
-//  remplire champ
 
+// --------------------------
+//  CHARGER L'ITEM À MODIFIER
+// --------------------------
 if ($strMessage == '') {
 
-    $strNomItem = $arrItem['nom'];
+    $strRequete = "
+        SELECT id, nom, echeance, est_complete
+        FROM items
+        WHERE id = $idItem AND liste_id = $idListe
+    ";
 
-    if ($arrItem['echeance'] != '' && $arrItem['echeance'] != NULL) {
+    $pdos = $pdoConnexion->query($strRequete);
+    $arrItem = $pdos->fetch();
+    $pdos->closeCursor();
 
-        $chkEcheance = true;
+    if (!$arrItem) {
+        $strMessage = "Item introuvable.";
+    } else {
+        $strNomItem = $arrItem['nom'];
 
-        $t = strtotime($arrItem['echeance']);
-
-        $intAnnee = intval(date("Y", $t));
-        $intMois  = intval(date("m", $t));
-        $intJour  = intval(date("d", $t));
+        if ($arrItem['echeance'] != NULL) {
+            $t = strtotime($arrItem['echeance']);
+            $intAnnee = intval(date("Y", $t));
+            $intMois  = intval(date("m", $t));
+            $intJour  = intval(date("d", $t));
+            $chkEcheance = true;
+        }
     }
 }
 
-//     formulaire
 
+// --------------------------
+//  TRAITEMENT FORMULAIRE
+// --------------------------
 if ($strMessage == '' && isset($_GET['btn_enregistrer'])) {
 
     // nom
@@ -120,65 +146,89 @@ if ($strMessage == '' && isset($_GET['btn_enregistrer'])) {
         $strNomItem = '';
     }
 
-    // checkbox
+    // échéance
     if (isset($_GET['ajouter_echeance'])) {
         $chkEcheance = true;
     } else {
         $chkEcheance = false;
     }
 
-    // date
-    if (isset($_GET['annee'])) $intAnnee = intval($_GET['annee']);
-    if (isset($_GET['mois']))  $intMois  = intval($_GET['mois']);
-    if (isset($_GET['jour']))  $intJour  = intval($_GET['jour']);
+    if (isset($_GET['annee'])) {
+        $intAnnee = intval($_GET['annee']);
+    } else {
+        $intAnnee = 0;
+    }
+
+    if (isset($_GET['mois'])) {
+        $intMois = intval($_GET['mois']);
+    } else {
+        $intMois = 0;
+    }
+
+    if (isset($_GET['jour'])) {
+        $intJour = intval($_GET['jour']);
+    } else {
+        $intJour = 0;
+    }
 
     $blnValide = true;
 
 
-    // nom obligatoire
+    // -------- VALIDATION NOM ----------
+    $regex = "/^[A-Za-zÀ-ÖØ-öø-ÿ0-9' #\-]{1,55}$/";
+
     if ($strNomItem == '') {
         $blnValide = false;
-        $errNom = "Le nom est obligatoire.";
+        $errNom = $arrMessages['nom_item']['erreurs']['vide'];
+    } else {
+
+        $ok = preg_match($regex, $strNomItem);
+
+        if ($ok == false) {
+            $blnValide = false;
+            $errNom = $arrMessages['nom_item']['erreurs']['motif'];
+        }
     }
 
 
-    // date obligatoire si checkbox cochée
+    // -------- VALIDATION DATE ---------
     if ($chkEcheance) {
 
         if (!($intAnnee > 0 && $intMois > 0 && $intJour > 0)) {
             $blnValide = false;
-            $errDate = "La date doit être complète.";
+            $errDate = $arrMessages['echeance']['erreurs']['vide'];
         }
     }
 
-    //  date SQL
+
+    // Construire date SQL
     $strEcheanceSQL = "NULL";
 
     if ($chkEcheance && $errDate == '') {
 
         if ($intMois < 10) {
-            $m = "0" . $intMois;
+            $strMois = "0" . $intMois;
         } else {
-            $m = $intMois;
+            $strMois = $intMois;
         }
 
         if ($intJour < 10) {
-            $j = "0" . $intJour;
+            $strJour = "0" . $intJour;
         } else {
-            $j = $intJour;
+            $strJour = $intJour;
         }
 
-        $strEcheanceSQL = "'" . $intAnnee . "-" . $m . "-" . $j . " 00:00:00'";
+        $strEcheance = $intAnnee . "-" . $strMois . "-" . $strJour . " 00:00:00";
+        $strEcheanceSQL = "'" . $strEcheance . "'";
     }
 
 
-    // Update
+    // -------- MODIFICATION SQL --------
     if ($blnValide) {
 
         $strRequete = "
             UPDATE items
-            SET 
-                nom = " . $pdoConnexion->quote($strNomItem) . ",
+            SET nom = " . $pdoConnexion->quote($strNomItem) . ",
                 echeance = $strEcheanceSQL
             WHERE id = $idItem
         ";
@@ -186,20 +236,21 @@ if ($strMessage == '' && isset($_GET['btn_enregistrer'])) {
         $pdosUpdate = $pdoConnexion->query($strRequete);
 
         if ($pdosUpdate) {
-            $blnModificationEffectuee = true;
+            $blnModifie = true;
         } else {
             $strMessage = "Erreur lors de la modification.";
         }
     }
 }
 
+
 ?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<?php require_once($niveau.'liaisons/inc/fragments/head_links.inc.php'); ?>
-<title>Modifier un item</title>
+    <meta charset="UTF-8">
+    <?php require_once($niveau.'liaisons/inc/fragments/head_links.inc.php'); ?>
+    <title>Modifier un item</title>
 
 <style>
 .champ {
@@ -221,22 +272,26 @@ if ($strMessage == '' && isset($_GET['btn_enregistrer'])) {
 
 <body class="bg-[#383839]">
 
-<?php include($niveau."liaisons/inc/fragments/entete.inc.php"); ?>
+<?php include($niveau . "liaisons/inc/fragments/entete.inc.php"); ?>
 
 <main class="py-10 min-h-[70vh]">
 <div class="max-w-5xl mx-auto px-4">
 
 <h1 class="text-5xl font-bold text-white mb-8">Modifier un item</h1>
 
-<?php if ($strMessage != '') { ?>
-    <p class="text-red-300 font-semibold mb-4"><?php echo $strMessage; ?></p>
-<?php } ?>
+<?php 
+if ($strMessage != '') {
+    echo "<p class='text-red-300 font-semibold mb-4'>" . $strMessage . "</p>";
+} 
+?>
 
 
-<?php if ($blnModificationEffectuee) { ?>
+<?php if ($blnModifie) { ?>
 
-    <div class="bg-[#D1C2FF] text-black p-6 rounded-md text-center text-xl font-semibold mb-6">
-         L’item a été modifié avec succès !
+    <div class="bg-green-200 text-black p-6 rounded-md text-center text-xl font-semibold mb-6">
+        <?php
+        echo $arrMessages['retroactions']['item']['modifier'];
+        ?>
     </div>
 
     <div class="text-center mt-6">
@@ -246,14 +301,16 @@ if ($strMessage == '' && isset($_GET['btn_enregistrer'])) {
         </a>
     </div>
 
+
 <?php } else { ?>
 
 <section class="bg-[#463f6b] rounded-md border border-white/30 px-8 py-6 text-white">
 
+    <!-- Bande titre -->
     <div class="flex items-center gap-3 mb-8">
         <span class="w-4 h-4 rounded-full" style="background-color:#<?php echo $couleurHex; ?>"></span>
         <p class="text-2xl font-semibold">
-            Modifier dans la liste : <?php echo $arrListe['nom']; ?>
+            Modifier : <?php echo $arrListe['nom']; ?> (<?php echo $nbItems; ?>)
         </p>
     </div>
 
@@ -263,10 +320,15 @@ if ($strMessage == '' && isset($_GET['btn_enregistrer'])) {
         <input type="hidden" name="id_item"  value="<?php echo $idItem; ?>">
 
 
-        <!-- NOM -->
+        <!-- NOM ITEM -->
         <div>
             <label class="block text-2xl font-semibold mb-2">Nom de l’item</label>
-            <?php if ($errNom != '') echo "<p class='text-red-300 mb-1'>$errNom</p>"; ?>
+
+            <?php 
+            if ($errNom != '') {
+                echo "<p class='text-red-300 mb-1'>" . $errNom . "</p>";
+            }
+            ?>
 
             <input
                 type="text"
@@ -277,7 +339,7 @@ if ($strMessage == '' && isset($_GET['btn_enregistrer'])) {
         </div>
 
 
-        <!-- checkbox date -->
+        <!-- ÉCHÉANCE -->
         <div>
 
             <div class="flex items-center gap-3 mb-2">
@@ -288,10 +350,14 @@ if ($strMessage == '' && isset($_GET['btn_enregistrer'])) {
                     class="h-5 w-5 rounded border-2 border-black accent-[#FF66D6]"
                     <?php if ($chkEcheance) echo "checked"; ?>
                 >
-                <label class="text-2xl font-semibold">Ajouter / modifier la date d’échéance</label>
+                <label class="text-2xl font-semibold">Modifier la date d’échéance</label>
             </div>
 
-            <?php if ($errDate != '') echo "<p class='text-red-300 mb-2'>$errDate</p>"; ?>
+            <?php 
+            if ($errDate != '') {
+                echo "<p class='text-red-300 mb-2'>" . $errDate . "</p>";
+            }
+            ?>
 
             <div id="zone_date" class="flex gap-6 <?php if (!$chkEcheance) echo 'hidden'; ?>">
 
@@ -300,10 +366,14 @@ if ($strMessage == '' && isset($_GET['btn_enregistrer'])) {
                     <option value="0">année</option>
                     <?php 
                     $anneeCourante = date("Y");
-                    for ($a=$anneeCourante; $a <= $anneeCourante + 50; $a++) {
+                    $anneeMax = $anneeCourante + 50;
+
+                    for ($a = $anneeCourante; $a <= $anneeMax; $a++) {
                         $selected = "";
-                        if ($intAnnee == $a) $selected = "selected";
-                        echo "<option value='$a' $selected>$a</option>";
+                        if ($intAnnee == $a) {
+                            $selected = "selected";
+                        }
+                        echo "<option value='" . $a . "' " . $selected . ">" . $a . "</option>";
                     }
                     ?>
                 </select>
@@ -312,10 +382,12 @@ if ($strMessage == '' && isset($_GET['btn_enregistrer'])) {
                 <select name="mois" class="champ px-3 py-2 rounded-md text-black">
                     <option value="0">mois</option>
                     <?php 
-                    for ($m=1; $m<=12 ; $m++) {
+                    for ($m = 1; $m <= 12; $m++) {
                         $selected = "";
-                        if ($intMois == $m) $selected = "selected";
-                        echo "<option value='$m' $selected>$m</option>";
+                        if ($intMois == $m) {
+                            $selected = "selected";
+                        }
+                        echo "<option value='" . $m . "' " . $selected . ">" . $m . "</option>";
                     }
                     ?>
                 </select>
@@ -324,10 +396,12 @@ if ($strMessage == '' && isset($_GET['btn_enregistrer'])) {
                 <select name="jour" class="champ px-3 py-2 rounded-md text-black">
                     <option value="0">jour</option>
                     <?php 
-                    for ($j=1; $j<=31 ; $j++) {
+                    for ($j = 1; $j <= 31; $j++) {
                         $selected = "";
-                        if ($intJour == $j) $selected = "selected";
-                        echo "<option value='$j' $selected>$j</option>";
+                        if ($intJour == $j) {
+                            $selected = "selected";
+                        }
+                        echo "<option value='" . $j . "' " . $selected . ">" . $j . "</option>";
                     }
                     ?>
                 </select>
@@ -337,7 +411,7 @@ if ($strMessage == '' && isset($_GET['btn_enregistrer'])) {
         </div>
 
 
-        <!-- Bouton -->
+        <!-- BOUTONS -->
         <div class="flex justify-center gap-16 pt-4">
 
             <a href="afficher.php?id_liste=<?php echo $idListe; ?>"
@@ -348,7 +422,7 @@ if ($strMessage == '' && isset($_GET['btn_enregistrer'])) {
             <input 
                 type="submit" 
                 name="btn_enregistrer" 
-                value="Enregistrer les modifications"
+                value="Enregistrer"
                 class="px-6 py-3 bg-pink-400 hover:bg-pink-500 text-black font-semibold rounded-lg shadow cursor-pointer"
             >
 
@@ -363,12 +437,11 @@ if ($strMessage == '' && isset($_GET['btn_enregistrer'])) {
 </div>
 </main>
 
-
 <?php include($niveau . "liaisons/inc/fragments/pied_de_page.inc.php"); ?>
 
 <script>
-document.addEventListener("DOMContentLoaded", function() {
-    var chk = document.getElementById("ajouter_echeance");
+document.addEventListener("DOMContentLoaded", function(){
+    var chk  = document.getElementById("ajouter_echeance");
     var zone = document.getElementById("zone_date");
 
     chk.addEventListener("change", function () {
