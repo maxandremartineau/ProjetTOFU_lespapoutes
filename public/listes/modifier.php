@@ -210,9 +210,9 @@ if ($strCodeOperation == "modifier" && $idListe > 0) {
 document.addEventListener("DOMContentLoaded", function () {
     var radios = document.getElementsByClassName("couleurRadio");
 
-    for (var i = 0; i < radios.length; i++) {
-        if (!radios[i].classList.contains("couleurRadioInvisible")) {
-            radios[i].classList.add("couleurRadioInvisible");
+    for (let intCpt = 0; intCpt < radios.length; intCpt++) {
+        if (!radios[intCpt].classList.contains("couleurRadioInvisible")) {
+            radios[intCpt].classList.add("couleurRadioInvisible");
         }
     }
 });
@@ -227,15 +227,37 @@ document.addEventListener("DOMContentLoaded", function () {
 
 <div class="max-w-4xl mx-auto m-16 bg-[#d8ccff] p-12 rounded-2xl shadow-xl">
 
-    <h1 class="font-bold text-4xl md:text-5xl text-center md:text-left py-6">Modifier la liste</h1>
+    <div class="flex items-center justify-between py-6">
+        <h1 class="font-bold text-4xl md:text-5xl">Modifier la liste</h1>
 
-    <?php if($strMessage != ""): ?>
-        <div class="mb-6 p-4 rounded-lg <?= (strpos($strMessage, 'succès') !== false) ? 'bg-green-200 text-green-800' : 'bg-red-200 text-red-800' ?>">
-            <p class="text-center text-lg font-semibold">
-                <?= $strMessage ?>
-            </p>
-        </div>
-    <?php endif; ?>
+        <a 
+            href="../items/ajouter.php?id_liste=<?= $idListe ?>" 
+            class="bg-[#454068] hover:bg-[#554f7a] text-white font-semibold px-6 py-3 rounded-xl shadow text-lg"
+        >
+            Ajouter un item
+        </a>
+    </div>
+
+
+        <?php
+        if ($strMessage != "") {
+        ?>
+            <div class="mb-6 p-4 rounded-lg 
+                <?php if (strpos($strMessage, 'succès') !== false) { ?>
+                    bg-green-200 text-green-800
+                <?php } 
+                else { ?>
+                    bg-red-200 text-red-800
+                <?php } ?>
+            ">
+                <p class="text-center text-lg font-semibold">
+                    <?= $strMessage ?>
+                </p>
+            </div>
+        <?php
+        }
+        ?>
+
 
     <form action="#" method="GET" class="space-y-10">
 

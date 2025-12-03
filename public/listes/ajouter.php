@@ -193,7 +193,7 @@ if ($strCodeOperation == "ajouter") {
 
 ?>
 
-<!-- création btn radio accessible -->
+<!-- Création btn radio accessible -->
 <style>
 .couleurRadioInvisible {
     position: absolute;
@@ -222,7 +222,7 @@ if ($strCodeOperation == "ajouter") {
 document.addEventListener("DOMContentLoaded", function () {
     var radios = document.getElementsByClassName("couleurRadio");
 
-    for (var intCpt = 0; intCpt < radios.length; intCpt++) {
+    for (let intCpt = 0; intCpt < radios.length; intCpt++) {
         if (!radios[intCpt].classList.contains("couleurRadioInvisible")) {
             radios[intCpt].classList.add("couleurRadioInvisible");
         }
@@ -291,7 +291,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 for ($intCpt = 0; $intCpt < count($arrCouleurs); $intCpt++) {
                     $couleurs = $arrCouleurs[$intCpt];
                     $checked = "";
-                    if (isset($arrListe["couleur_id"]) && $arrListe["couleur_id"] == $c["id"]) {
+                    if (isset($arrListe["couleur_id"]) && $arrListe["couleur_id"] == $couleurs["id"]) {
                         $checked = "checked";
                     }
                 ?>

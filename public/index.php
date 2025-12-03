@@ -175,11 +175,11 @@ $pdosResultat->closeCursor();
     <div class="flex items-center justify-between bg-[#463f6b] py-5 px-4">
         <h2 class="text-white font-bold text-3xl">Item(s) venant à échéance</h2>
 
-        <div class="relative inline-block">
+        <div title="Tous les éléments qui viennent à échéance" class="relative inline-block">
             <img src="liaisons/images/icons/echeanceBlanc.svg" class="w-10 h-auto" alt="Logo échéance">
-            <span class="absolute -top-1 -right-1 bg-red-600 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center shadow-lg">
+            <p class="absolute -top-1 -right-1 bg-red-600 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center shadow-lg">
                 <?php echo $totalEcheances; ?>
-            </span>
+            </p>
         </div>
     </div>
 
@@ -218,7 +218,7 @@ $pdosResultat->closeCursor();
 
 
 
-
+<!-- Bouton ajouter une liste + le titre -->
 
 
 <div class="max-w-5xl mx-auto w-full m-8 px-4">
@@ -243,7 +243,7 @@ $pdosResultat->closeCursor();
 
 </div>
 
-
+<!-- Affiche les listes -->
 
 <form action="index.php" method="GET">
 
@@ -311,7 +311,7 @@ for ($intCptListes = 0; $intCptListes < count($arrListes); $intCptListes++) {
 
         <p class="text-center text-black/90 mb-10 text-lg leading-relaxed">
             Voulez-vous vraiment supprimer cette liste ?<br>
-            Cette action est irréversible.
+            Cette action est irréversible et supprimera tous les items à l’intérieur.
         </p>
 
         <input type="hidden" id="idListeASupprimer" value="">

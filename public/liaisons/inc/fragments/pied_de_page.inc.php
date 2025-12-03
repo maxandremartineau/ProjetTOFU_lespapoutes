@@ -3,8 +3,14 @@
                 flex flex-col items-center gap-6
                 md:flex-row md:items-center md:justify-between">
 
-        <!-- Futur logo -->
-        <div class="bg-white w-64 h-40 rounded"></div>
+        <!-- Logo -->
+        <a href="<?= $niveau ?>index.php" class="flex items-center">
+            <img 
+                src="<?php echo $niveau ?>liaisons/images/icons/logo.svg"
+                class="h-16 object-contain"
+                alt="logo"
+            >
+        </a>
 
         <!-- Textes des crédits -->
         <div class="text-center md:text-right leading-tight">
