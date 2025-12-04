@@ -20,9 +20,9 @@ if ($blnLocal) {
 } else {
     // En ligne
     $strHost = 'localhost';
-    $strBD = '25_rpni1_tofu';
-    $strUser = '25_rpni1_user';
-    $strPassword = '25_rpni1_mdp';
+    $strBD = '25_rpni1_lespapoutes';
+    $strUser = '25_rpni1_lespapoutes';
+    $strPassword = 'J08GT5I9Aw2oxk5I';
     error_reporting(E_ALL & ~E_NOTICE);
 }
 

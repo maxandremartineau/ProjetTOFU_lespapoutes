@@ -14,7 +14,7 @@ $strMessage = "";
 $strCodeErreur = "00000";
 
 // ------------------------------------------------------------
-// SUPPRIMER UNE LISTE (AVEC TES MODIFS)
+// SUPPRIMER UNE LISTE + TOUS SES ITEMS
 // ------------------------------------------------------------
 if ($strCodeOperation == "supprimer") {
 
@@ -24,29 +24,40 @@ if ($strCodeOperation == "supprimer") {
         $strIdListe = "";
     }
 
-    // DELETE dans la table listes
-    $strRequeteSupprimer = "
+    // SUPPRIMER LES ITEMS DE LA LISTE
+    $strRequeteSupprimerItems = "
+        DELETE FROM items
+        WHERE liste_id = :id_liste
+    ";
+
+    $pdosSupprimerItems = $pdoConnexion->prepare($strRequeteSupprimerItems);
+    $pdosSupprimerItems->bindValue(':id_liste', $strIdListe);
+    $pdosSupprimerItems->execute();
+
+
+    // SUPPRIMER LA LISTE
+    $strRequeteSupprimerListe = "
         DELETE FROM listes
         WHERE id = :id_liste
     ";
 
-    $pdosResultatSupprimer = $pdoConnexion->prepare($strRequeteSupprimer);
-    $pdosResultatSupprimer->bindValue(':id_liste', $strIdListe);
-    $pdosResultatSupprimer->execute();
+    $pdosSupprimerListe = $pdoConnexion->prepare($strRequeteSupprimerListe);
+    $pdosSupprimerListe->bindValue(':id_liste', $strIdListe);
+    $pdosSupprimerListe->execute();
 
+
+    // Gérer erreurs
     $strCodeErreur = $pdoConnexion->errorCode();
 
     if ($strCodeErreur != "00000") {
-        // Si tu utilises arrMessages JSON, remplace la chaîne par $arrMessages["echouer"]
         $strMessage = "Une erreur est survenue lors de la suppression.";
     } else {
-        // Si tu utilises arrMessages JSON, remplace la chaîne par $arrMessages["supprimer"]
         $strMessage = "Liste supprimée avec succès.";
-        // REDIRIGE VERS L'ACCUEIL
         header("Location: index.php");
         exit;
     }
 }
+
 ?>
 
 <!DOCTYPE html>
