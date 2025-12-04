@@ -404,7 +404,7 @@ if ($strMessage != '') {
         </div>
 
     </form>
-S
+
 </section>
 
 <?php } ?>

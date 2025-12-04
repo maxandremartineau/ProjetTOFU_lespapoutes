@@ -169,7 +169,7 @@ $nbItems = count($arrItems);
 
             if ($item['echeance'] != '' && $item['echeance'] != NULL) {
                 $t = strtotime($item['echeance']);
-                $strEcheance = date("H\hi/d/m/Y", $t);
+                $strEcheance = date("Y / m / d", $t);
             } else {
                 $strEcheance = "—";
             }
