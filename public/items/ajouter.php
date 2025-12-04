@@ -20,10 +20,8 @@ $errNom  = '';
 $errDate = '';
 $blnAjoutEffectue = false;
 
+//  ID Liste
 
-// --------------------------
-//  ID LISTE
-// --------------------------
 if (isset($_GET['id_liste'])) {
     $strIdListe = intval($_GET['id_liste']);
 } else {
@@ -34,10 +32,8 @@ if ($strIdListe == 0) {
     $strMessage = "Aucune liste reçue.";
 }
 
+//  Charger liste
 
-// --------------------------
-//  CHARGER LA LISTE
-// --------------------------
 if ($strMessage == '') {
 
     $strRequete = "
@@ -55,10 +51,8 @@ if ($strMessage == '') {
     }
 }
 
+//  Couleur et nombre d'item
 
-// --------------------------
-//  COULEUR + NB ITEMS
-// --------------------------
 if ($strMessage == '') {
 
     // couleur
@@ -90,10 +84,8 @@ if ($strMessage == '') {
     }
 }
 
+//  Formulaire
 
-// --------------------------
-//  TRAITEMENT FORMULAIRE
-// --------------------------
 if ($strMessage == '' && isset($_GET['btn_enregistrer'])) {
 
     // nom item
@@ -131,9 +123,7 @@ if ($strMessage == '' && isset($_GET['btn_enregistrer'])) {
     $blnValide = true;
 
 
-    // -------- VALIDATION NOM ----------
-    // Minuscules, majuscules, caractères accentués, espace,
-    // guillemet simple, trait d'union, #, max 55 caractères.
+    // Validation nom
     $regexNom = "/^[A-Za-zÀ-ÖØ-öø-ÿ0-9' #\-]{1,55}$/";
 
     if ($strNomItem == '') {
@@ -156,7 +146,7 @@ if ($strMessage == '' && isset($_GET['btn_enregistrer'])) {
     }
 
 
-    // -------- VALIDATION DATE ---------
+    // Validation date
     if ($chkEcheance) {
 
         if (!($intAnnee > 0 && $intMois > 0 && $intJour > 0)) {
@@ -171,7 +161,7 @@ if ($strMessage == '' && isset($_GET['btn_enregistrer'])) {
     }
 
 
-    // Construire la date SQL
+    //  date SQL
     $strEcheanceSQL = "NULL";
 
     if ($chkEcheance && $errDate == '') {
@@ -193,7 +183,7 @@ if ($strMessage == '' && isset($_GET['btn_enregistrer'])) {
     }
 
 
-    // INSERTION
+    // Insert
     if ($blnValide) {
 
         $strRequete = "
@@ -280,7 +270,7 @@ if ($strMessage != '') {
 
 <section class="bg-[#463f6b] rounded-md border border-white/30 px-8 py-6 text-white">
 
-    <!-- Bande titre -->
+    <!-- titre -->
     <div class="flex items-center gap-3 mb-8">
         <span class="w-4 h-4 rounded-full" style="background-color:#<?php echo $couleurHex; ?>"></span>
         <p class="text-2xl font-semibold">
@@ -293,7 +283,7 @@ if ($strMessage != '') {
         <input type="hidden" name="id_liste" value="<?php echo $strIdListe; ?>">
 
 
-        <!-- NOM ITEM -->
+        <!-- Nom -->
         <div>
             <label class="block text-2xl font-semibold mb-2">Nom de l’item</label>
             <?php 
@@ -310,7 +300,7 @@ if ($strMessage != '') {
         </div>
 
 
-        <!-- CHECKBOX + DATE -->
+        <!-- checkbox et date -->
         <div>
 
             <div class="flex items-center gap-3 mb-2">
@@ -386,7 +376,7 @@ if ($strMessage != '') {
         </div>
 
 
-        <!-- BOUTONS -->
+        <!-- Boutons -->
         <div class="flex justify-center gap-16 pt-4">
 
             <a href="afficher.php?id_liste=<?php echo $strIdListe; ?>"
@@ -397,7 +387,7 @@ if ($strMessage != '') {
             <input 
                 type="submit" 
                 name="btn_enregistrer" 
-                value="ajouter l'item"
+                value="Ajouter l'item"
                 class="px-6 py-3 bg-pink-400 hover:bg-pink-500 text-black font-semibold rounded-lg shadow cursor-pointer"
             >
 

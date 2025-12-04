@@ -25,9 +25,7 @@ $strJSON = file_get_contents($niveau . "liaisons/json/objJSONMessages.json");
 $arrMessages = json_decode($strJSON, true);
 
 
-// --------------------------
-//  ID LISTE + ID ITEM
-// --------------------------
+//  ID Liste + ID Item
 if (isset($_GET['id_liste'])) {
     $idListe = intval($_GET['id_liste']);
 } else {
@@ -44,10 +42,8 @@ if ($idListe == 0 || $idItem == 0) {
     $strMessage = "Paramètres invalides.";
 }
 
+//  Charger la liste
 
-// --------------------------
-//  CHARGER LA LISTE
-// --------------------------
 if ($strMessage == '') {
 
     $strRequete = "
@@ -65,10 +61,8 @@ if ($strMessage == '') {
     }
 }
 
+//  Couleur et nombre d'item
 
-// --------------------------
-//  COULEUR + NB ITEMS
-// --------------------------
 if ($strMessage == '') {
 
     // Couleur
@@ -102,10 +96,8 @@ if ($strMessage == '') {
     }
 }
 
+//  Charger l'item à modifier
 
-// --------------------------
-//  CHARGER L'ITEM À MODIFIER
-// --------------------------
 if ($strMessage == '') {
 
     $strRequete = "
@@ -133,10 +125,8 @@ if ($strMessage == '') {
     }
 }
 
+//  Formulaire
 
-// --------------------------
-//  TRAITEMENT FORMULAIRE
-// --------------------------
 if ($strMessage == '' && isset($_GET['btn_enregistrer'])) {
 
     // nom
@@ -174,7 +164,7 @@ if ($strMessage == '' && isset($_GET['btn_enregistrer'])) {
     $blnValide = true;
 
 
-    // -------- VALIDATION NOM ----------
+    // Validation nom
     $regex = "/^[A-Za-zÀ-ÖØ-öø-ÿ0-9' #\-]{1,55}$/";
 
     if ($strNomItem == '') {
@@ -191,7 +181,7 @@ if ($strMessage == '' && isset($_GET['btn_enregistrer'])) {
     }
 
 
-    // -------- VALIDATION DATE ---------
+    // Validation date
     if ($chkEcheance) {
 
         if (!($intAnnee > 0 && $intMois > 0 && $intJour > 0)) {
@@ -201,7 +191,7 @@ if ($strMessage == '' && isset($_GET['btn_enregistrer'])) {
     }
 
 
-    // Construire date SQL
+    // Construire date 
     $strEcheanceSQL = "NULL";
 
     if ($chkEcheance && $errDate == '') {
@@ -223,7 +213,7 @@ if ($strMessage == '' && isset($_GET['btn_enregistrer'])) {
     }
 
 
-    // -------- MODIFICATION SQL --------
+    // Update sql
     if ($blnValide) {
 
         $strRequete = "
@@ -306,7 +296,7 @@ if ($strMessage != '') {
 
 <section class="bg-[#463f6b] rounded-md border border-white/30 px-8 py-6 text-white">
 
-    <!-- Bande titre -->
+    <!-- titre -->
     <div class="flex items-center gap-3 mb-8">
         <span class="w-4 h-4 rounded-full" style="background-color:#<?php echo $couleurHex; ?>"></span>
         <p class="text-2xl font-semibold">
@@ -320,7 +310,7 @@ if ($strMessage != '') {
         <input type="hidden" name="id_item"  value="<?php echo $idItem; ?>">
 
 
-        <!-- NOM ITEM -->
+        <!-- Nom -->
         <div>
             <label class="block text-2xl font-semibold mb-2">Nom de l’item</label>
 
@@ -339,7 +329,7 @@ if ($strMessage != '') {
         </div>
 
 
-        <!-- ÉCHÉANCE -->
+        <!-- Échéance -->
         <div>
 
             <div class="flex items-center gap-3 mb-2">
@@ -411,7 +401,7 @@ if ($strMessage != '') {
         </div>
 
 
-        <!-- BOUTONS -->
+        <!-- Boutons -->
         <div class="flex justify-center gap-16 pt-4">
 
             <a href="afficher.php?id_liste=<?php echo $idListe; ?>"
