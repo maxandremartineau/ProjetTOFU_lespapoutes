@@ -146,11 +146,6 @@ if ($strCodeOperation == "modifier" && $idListe > 0) {
     $arrErreurs = validerListe($arrListe, $arrMessages);
     $ok = (count($arrErreurs) === 0);
 
-    // Debug: Show what we received
-    if (!empty($arrListe['nom']) || !empty($arrListe['couleur_id'])) {
-        $strMessage = "Debug: Nom='" . htmlspecialchars($arrListe['nom']) . "', Couleur='" . $arrListe['couleur_id'] . "', Erreurs=" . count($arrErreurs);
-    }
-
     if ($ok) {
         // Convert color_id to integer after successful validation
         $arrListe['couleur_id'] = intval($arrListe['couleur_id']);

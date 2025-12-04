@@ -199,7 +199,7 @@ $pdosResultat->closeCursor();
         <?php while ($item = $pdosEcheances->fetch()) {
 
             $dateObj = new DateTime($item['echeance']);
-            $dateAffiche = $dateObj->format('H\hi / d/m/Y');
+            $dateAffiche = $dateObj->format('Y / m / d');
 
         ?>
 
