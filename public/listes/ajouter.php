@@ -324,14 +324,14 @@ document.addEventListener("DOMContentLoaded", function () {
         <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
             <a 
                 href="../index.php"
-                class="order-1 bg-white px-10 py-4 rounded-xl text-lg font-semibold shadow hover:bg-gray-200 text-center md:order-1"
+                class="order-1 bg-white px-10 py-4 rounded-xl text-lg font-semibold shadow hover:bg-[#FFB1EA] text-center md:order-1"
             >
                 Annuler
             </a>
             <button 
                 type="submit"
                 name="btn_ajouter"
-                class="order-2 bg-[#FF66D6] hover:bg-[#ff47cd] text-white text-xl px-10 py-4 rounded-xl shadow font-bold md:order-2"
+                class="order-2 bg-[#FF66D6] hover:bg-[#ff47cd] text-black text-xl px-10 py-4 rounded-xl shadow font-semibold md:order-2"
             >
                 Ajouter la liste
             </button>

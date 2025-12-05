@@ -340,7 +340,7 @@ for ($intCptListes = 0; $intCptListes < count($arrListes); $intCptListes++) {
             <button 
                 type="button"
                 id="btnAnnulerSuppression"
-                class="w-full bg-[#383839] hover:bg-[#5b5386] text-white font-semibold py-3 rounded-xl shadow-lg text-lg">
+                class="w-full bg-white hover:bg-[#FFB1EA] text-black font-semibold py-3 rounded-xl shadow-lg text-lg">
                 Annuler
             </button>
         </div>
