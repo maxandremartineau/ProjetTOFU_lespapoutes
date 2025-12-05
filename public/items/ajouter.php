@@ -146,19 +146,34 @@ if ($strMessage == '' && isset($_GET['btn_enregistrer'])) {
     }
 
 
-    // Validation date
-    if ($chkEcheance) {
+// Validation date
+if ($chkEcheance) {
 
-        if (!($intAnnee > 0 && $intMois > 0 && $intJour > 0)) {
+    // 1) Tous les champs doivent être choisis
+    if (!($intAnnee > 0 && $intMois > 0 && $intJour > 0)) {
+        $blnValide = false;
+
+        if (isset($arrMessages['echeance']['erreurs']['vide'])) {
+            $errDate = $arrMessages['echeance']['erreurs']['vide'];
+        } else {
+            $errDate = "Veuillez entrer une date d'échéance complète.";
+        }
+    } else {
+
+        // Vérifier que la date existe vraiment 
+        $okDate = checkdate($intMois, $intJour, $intAnnee);
+
+        if ($okDate == false) {
             $blnValide = false;
 
-            if (isset($arrMessages['echeance']['erreurs']['vide'])) {
-                $errDate = $arrMessages['echeance']['erreurs']['vide'];
+            if (isset($arrMessages['echeance']['erreurs']['motif'])) {
+                $errDate = $arrMessages['echeance']['erreurs']['motif'];
             } else {
-                $errDate = "Veuillez entrer une date d'échéance complète.";
+                $errDate = "Cette date d'échéance n'est pas possible.";
             }
         }
     }
+}
 
 
     //  date SQL
@@ -227,6 +242,19 @@ if ($strMessage == '' && isset($_GET['btn_enregistrer'])) {
     background:white;
     border-color:#FF66D6;
     outline:none;
+}
+
+@media (max-width: 400px) {
+    .btn-stack {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    .btn-stack a,
+    .btn-stack input {
+        width: 100%;
+        max-width: 260px;
+        text-align: center;
+    }
 }
 </style>
 
@@ -377,7 +405,7 @@ if ($strMessage != '') {
 
 
         <!-- Boutons -->
-        <div class="flex justify-center gap-16 pt-4">
+        <div class="flex justify-center gap-16 pt-4 btn-stack">
 
             <a href="afficher.php?id_liste=<?php echo $strIdListe; ?>"
                class="px-8 py-3 border-2 bg-white text-black hover:bg-pink-500 text-lg font-semibold rounded-lg">
