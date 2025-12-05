@@ -408,7 +408,7 @@ if ($strMessage != '') {
         <div class="flex justify-center gap-16 pt-4 btn-stack">
 
             <a href="afficher.php?id_liste=<?php echo $strIdListe; ?>"
-               class="px-8 py-3 border-2 bg-white text-black hover:bg-pink-500 text-lg font-semibold rounded-lg">
+               class="px-8 py-3 border-2 bg-white text-black hover:bg-[#FFB1EA] text-lg font-semibold rounded-lg">
                Annuler
             </a>
 

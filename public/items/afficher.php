@@ -221,7 +221,7 @@ $nbItems = count($arrItems);
                         Modifier
                     </a>
 
-                    <!-- IMPORTANT : href = URL de suppression originale -->
+                    <!-- URL de suppression originale -->
                     <a href="afficher.php?id_liste=<?php echo $arrListe['id']; ?>&action=supprimer&id_item=<?php echo $item['id']; ?>" 
                     class="flex items-center gap-1 btnOuvrirModaleSupp hover:underline hover:text-[#FF66D6]">
                         <img src="<?php echo $niveau; ?>liaisons/images/icons/remove.svg" class="w-5" alt=""> 
@@ -254,7 +254,7 @@ $nbItems = count($arrItems);
 
 </main>
 
-<!-- MODALE DE SUPPRESSION -->
+<!-- Modale de supression -->
 
 <dialog id="modalSuppression" class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-lg rounded-2xl p-0 shadow-2xl backdrop:bg-black/70">
 
@@ -269,7 +269,7 @@ $nbItems = count($arrItems);
             Cette action est irréversible.
         </p>
 
-        <!-- URL DE SUPPRESSION -->
+        <!-- URL supression-->
         <input type="hidden" id="urlSuppression" value="">
 
         <div class="flex flex-col gap-4">
@@ -285,7 +285,7 @@ $nbItems = count($arrItems);
             <button 
                 type="button"
                 id="btnAnnulerSuppression"
-                class="w-full bg-[#383839] hover:bg-[#5b5386] text-white font-semibold py-3 rounded-xl shadow-lg text-lg">
+                class="w-full px-8 py-3  bg-white text-black hover:bg-[#FFB1EA] text-lg font-semibold rounded-lg">
                 Annuler
             </button>
         </div>
