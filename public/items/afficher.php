@@ -7,7 +7,6 @@ $arrListe   = array();
 $arrItems   = array();
 
 // recuperation de l'id
-
 if (isset($_GET['id_liste'])) {
     $strIdListe = intval($_GET['id_liste']);
 } else {
@@ -18,9 +17,7 @@ if ($strIdListe == 0) {
     $strMessage = "Aucune liste reçue.";
 }
 
-
-   /// traitement supprimer et checked
-
+/// traitement supprimer et checked
 if ($strMessage == '' && isset($_GET['action']) && isset($_GET['id_item'])) {
 
     $intIdItem = intval($_GET['id_item']);
@@ -28,7 +25,6 @@ if ($strMessage == '' && isset($_GET['action']) && isset($_GET['id_item'])) {
 
     // Supprimer un item
     if ($strAction == 'supprimer') {
-
         $strRequete = "
             DELETE FROM items
             WHERE id = $intIdItem
@@ -61,7 +57,6 @@ if ($strMessage == '' && isset($_GET['action']) && isset($_GET['id_item'])) {
 }
 
 // requête liste
-
 if ($strMessage == '') {
 
     $strRequete = "
@@ -126,30 +121,24 @@ $nbItems = count($arrItems);
     <title>Liste</title>
 </head>
 
-
-<body class="bg-[#383839]" >
+<body class="bg-[#383839]">
 
 <?php include($niveau . "liaisons/inc/fragments/entete.inc.php"); ?>
 
-<main class="py-10 min-h-[70vh] ">
+<main class="py-10 min-h-[70vh]">
 
     <div class="max-w-5xl mx-auto w-full px-4">
 
     <?php
    
-    // Message d’erreur s’il y a lieu
-   
     if ($strMessage != '') {
         echo "<p class='text-center text-red-600 font-bold text-xl mt-10'>$strMessage</p>";
     } 
-
-    // Sinon : afficher le titre + les items
-   
     else {
     ?>
 
         <!-- Bande titre -->
-        <div class="flex items-center gap-3 bg-[#463f6b] border-3 border-white/20 px-6 py-4 rounded-md">
+        <div class="flex items-center gap-3 bg-[#463f6b] border border-white/20 px-6 py-4 rounded-md">
             <span class="w-5 h-5 rounded-full border border-black"
                   style="background-color:#<?php echo $couleurHex; ?>"></span>
 
@@ -167,70 +156,72 @@ $nbItems = count($arrItems);
 
             $item = $arrItems[$i];
 
-            if ($item['echeance'] != '' && $item['echeance'] != NULL) {
+            if ($item['echeance']) {
                 $t = strtotime($item['echeance']);
                 $strEcheance = date("Y / m / d", $t);
             } else {
                 $strEcheance = "—";
             }
 
-            // Valeur à envoyer si on clique sur la checkbox 
-            $intEstToggle = 1;
-            if ($item['est_complete'] == 1) {
-                $intEstToggle = 0;
-            }
+            $intEstToggle = ($item['est_complete'] == 1) ? 0 : 1;
         ?>
 
-            <!-- Box item-->
-            <div class="bg-[#D1C2FF] border border-gray-300 shadow-sm rounded-md px-6 py-4 flex items-stretch text-sm text-black">
+<!-- Box item -->
+<div class="bg-[#D1C2FF] border border-gray-300 shadow-sm rounded-md
+            px-4 py-4 text-black text-base">
 
-                <!-- Checkbox (formulaire pour toggle) -->
-                <div class="flex items-center w-10">
-                    <form action="afficher.php" method="GET">
-                        <input type="hidden" name="id_liste" value="<?php echo $arrListe['id']; ?>">
-                        <input type="hidden" name="id_item" value="<?php echo $item['id']; ?>">
-                        <input type="hidden" name="action" value="toggle">
-                        <input type="hidden" name="est_complete" value="<?php echo $intEstToggle; ?>">
-                        <input 
-                            type="checkbox"
-                            class="h-5 w-5 rounded border-2 border-black accent-[#FF66D6]"
-                            <?php if ($item['est_complete'] == 1) echo "checked"; ?>
-                            onchange="this.form.submit()"
-                        >
-                    </form>
-                </div>
+    <div class="flex flex-col gap-3 max-[500px]:gap-4 max-[500px]:items-start 
+                min-[500px]:flex-row min-[500px]:items-center min-[500px]:justify-between">
 
-                <!-- Nom -->
-                <div class="flex-1 pr-4 items-center">
-                    <p class="font-semibold">
-                        <?php echo $item['nom']; ?>
-                    </p>
-                </div>
+        <!-- Colonne gauche -->
+        <div class="flex-1 flex flex-col gap-1">
 
-                <!-- Échéance -->
-                <div class="flex items-center w-40 font-medium">
-                    <?php echo $strEcheance; ?>
-                </div>
+            <!-- Checkbox + nom -->
+            <div class="flex items-center gap-3">
+                <form action="afficher.php" method="GET">
+                    <input type="hidden" name="id_liste" value="<?php echo $arrListe['id']; ?>">
+                    <input type="hidden" name="id_item" value="<?php echo $item['id']; ?>">
+                    <input type="hidden" name="action" value="toggle">
+                    <input type="hidden" name="est_complete" value="<?php echo $intEstToggle; ?>">
 
-                <!-- Actions -->
-                <div class="flex items-center justify-end w-48 gap-6">
+                    <input 
+                        type="checkbox"
+                        class="h-5 w-5 rounded border-2 border-black accent-[#FF66D6]"
+                        <?php if ($item['est_complete'] == 1) echo "checked"; ?>
+                        onchange="this.form.submit()"
+                    >
+                </form>
 
-                    <a href="<?php echo $niveau; ?>items/modifier.php?id_item=<?php echo $item['id']; ?>&id_liste=<?php echo $arrListe['id']; ?>" 
-                    class="flex items-center gap-1 hover:underline hover:text-[#FF66D6]">
-                        <img src="<?php echo $niveau; ?>liaisons/images/icons/edit.svg" class="w-6" alt=""> 
-                        Modifier
-                    </a>
-
-                    <!-- URL de suppression originale -->
-                    <a href="afficher.php?id_liste=<?php echo $arrListe['id']; ?>&action=supprimer&id_item=<?php echo $item['id']; ?>" 
-                    class="flex items-center gap-1 btnOuvrirModaleSupp hover:underline hover:text-[#FF66D6]">
-                        <img src="<?php echo $niveau; ?>liaisons/images/icons/remove.svg" class="w-5" alt=""> 
-                        Supprimer
-                    </a>
-
-                </div>
-
+                <p class="font-semibold"><?php echo $item['nom']; ?></p>
             </div>
+
+            <!-- Date -->
+            <div class="pl-8 max-[500px]:pl-8 text-black/80 font-medium">
+                Échéance : <?php echo $strEcheance; ?>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="flex flex-wrap justify-start gap-4 
+                    min-[500px]:justify-end min-[500px]:gap-6 min-[500px]:w-60">
+
+            <a href="<?php echo $niveau; ?>items/modifier.php?id_item=<?php echo $item['id']; ?>&id_liste=<?php echo $arrListe['id']; ?>" 
+               class="flex items-center gap-1 hover:underline hover:text-[#FF66D6]">
+                <img src="<?php echo $niveau; ?>liaisons/images/icons/edit.svg" class="w-5" alt="">
+                Modifier
+            </a>
+
+            <a href="afficher.php?id_liste=<?php echo $arrListe['id']; ?>&action=supprimer&id_item=<?php echo $item['id']; ?>" 
+               class="flex items-center gap-1 btnOuvrirModaleSupp hover:underline hover:text-[#FF66D6]">
+                <img src="<?php echo $niveau; ?>liaisons/images/icons/remove.svg" class="w-5" alt="">
+                Supprimer
+            </a>
+        </div>
+
+    </div>
+
+</div>
+
         <?php } ?>
 
         </div>
@@ -242,23 +233,23 @@ $nbItems = count($arrItems);
                 type="submit" 
                 name="btn_nouveau" 
                 value="Ajouter un item"
-                class="px-6 py-3 bg-pink-400  hover:bg-pink-500 text-black font-semibold rounded-lg  shadow"
+                class="px-6 py-3 bg-pink-400 hover:bg-pink-500 text-black font-semibold rounded-lg shadow"
             >
         </form>
 
-    <?php
-    } 
-    ?>
+    <?php } ?>
 
     </div>
 
 </main>
 
-<!-- Modale de supression -->
+<!-- Modale de suppression -->
 
-<dialog id="modalSuppression" class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-lg rounded-2xl p-0 shadow-2xl backdrop:bg-black/70">
+<dialog id="modalSuppression"
+        class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2
+               w-[90%] max-w-lg rounded-2xl p-0 shadow-2xl backdrop:bg-black/70">
 
-    <form method="dialog" class="bg-[#D1C2FF] p-10 rounded-2xl text-black">
+    <form method="dialog" class="bg-[#D1C2FF] p-6 sm:p-10 rounded-2xl text-black">
 
         <h3 class="text-3xl font-bold mb-6 text-center">
             Confirmer la suppression
@@ -269,23 +260,20 @@ $nbItems = count($arrItems);
             Cette action est irréversible.
         </p>
 
-        <!-- URL supression-->
         <input type="hidden" id="urlSuppression" value="">
 
         <div class="flex flex-col gap-4">
 
-            <!-- Bouton supprimer (rose) -->
             <button 
                 id="btnConfirmerSuppression"
                 class="w-full bg-[#FF66D6] hover:bg-pink-500 text-black font-semibold py-3 rounded-xl shadow-lg text-lg">
                 Supprimer
             </button>
 
-            <!-- Bouton annuler -->
             <button 
                 type="button"
                 id="btnAnnulerSuppression"
-                class="w-full px-8 py-3  bg-white text-black hover:bg-[#FFB1EA] text-lg font-semibold rounded-lg">
+                class="w-full px-8 py-3 bg-white text-black hover:bg-[#FFB1EA] text-lg font-semibold rounded-lg">
                 Annuler
             </button>
         </div>
@@ -298,19 +286,15 @@ $nbItems = count($arrItems);
 
 
 <script>
-/* Ouvrir la modale depuis chaque lien Supprimer */
+/* Ouvrir la modale */
 document.querySelectorAll('.btnOuvrirModaleSupp').forEach(btn => {
 
     btn.addEventListener('click', function(e) {
         e.preventDefault();
 
-        // On récupère l’URL de suppression réelle (href)
         const url = this.getAttribute('href');
-
-        // On la stocke dans le champ hidden
         document.getElementById('urlSuppression').value = url;
 
-        // Ouvrir la modale
         const dialogue = document.getElementById('modalSuppression');
         if (typeof dialogue.showModal === 'function') {
             dialogue.showModal();
@@ -349,4 +333,5 @@ document.getElementById('modalSuppression').addEventListener('click', function(e
 
 </body>
 </html>
+
 

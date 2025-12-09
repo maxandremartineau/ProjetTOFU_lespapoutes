@@ -262,35 +262,6 @@ if ($chkEcheance) {
     <?php require_once($niveau.'liaisons/inc/fragments/head_links.inc.php'); ?>
     <title>Modifier un item</title>
 
-<style>
-.champ {
-    background:white;
-    border:2px solid #FFB1EA;
-    transition:0.2s;
-}
-.champ:hover {
-    background:#FDD4F2;
-}
-.champ:focus {
-    background:white;
-    border-color:#FF66D6;
-    outline:none;
-}
-
-@media (max-width: 400px) {
-    .btn-stack {
-        flex-direction: column;
-        gap: 1rem;
-    }
-    .btn-stack a,
-    .btn-stack input {
-        width: 100%;
-        max-width: 260px;
-        text-align: center;
-    }
-}
-</style>
-
 </head>
 
 <body class="bg-[#383839]">
@@ -356,7 +327,10 @@ if ($strMessage != '') {
             <input
                 type="text"
                 name="nom_item"
-                class="champ w-full max-w-md rounded-md px-4 py-2 text-lg text-black"
+                class="w-full max-w-md rounded-md px-4 py-2 text-lg text-black
+                       bg-white border-2 border-[#FFB1EA] transition duration-200
+                       hover:bg-[#FDD4F2]
+                       focus:bg-white focus:border-[#FF66D6] focus:outline-none"
                 value="<?php echo $strNomItem; ?>"
             >
         </div>
@@ -385,7 +359,11 @@ if ($strMessage != '') {
             <div id="zone_date" class="flex gap-6 <?php if (!$chkEcheance) echo 'hidden'; ?>">
 
                 <!-- Année -->
-                <select name="annee" class="champ px-3 py-2 rounded-md text-black">
+                <select name="annee"
+                    class="px-3 py-2 rounded-md text-black
+                           bg-white border-2 border-[#FFB1EA] transition duration-200
+                           hover:bg-[#FDD4F2]
+                           focus:bg-white focus:border-[#FF66D6] focus:outline-none">
                     <option value="0">année</option>
                     <?php 
                     $anneeCourante = date("Y");
@@ -402,7 +380,11 @@ if ($strMessage != '') {
                 </select>
 
                 <!-- Mois -->
-                <select name="mois" class="champ px-3 py-2 rounded-md text-black">
+                <select name="mois"
+                    class="px-3 py-2 rounded-md text-black
+                           bg-white border-2 border-[#FFB1EA] transition duration-200
+                           hover:bg-[#FDD4F2]
+                           focus:bg-white focus:border-[#FF66D6] focus:outline-none">
                     <option value="0">mois</option>
                     <?php 
                     for ($m = 1; $m <= 12; $m++) {
@@ -416,7 +398,11 @@ if ($strMessage != '') {
                 </select>
 
                 <!-- Jour -->
-                <select name="jour" class="champ px-3 py-2 rounded-md text-black">
+                <select name="jour"
+                    class="px-3 py-2 rounded-md text-black
+                           bg-white border-2 border-[#FFB1EA] transition duration-200
+                           hover:bg-[#FDD4F2]
+                           focus:bg-white focus:border-[#FF66D6] focus:outline-none">
                     <option value="0">jour</option>
                     <?php 
                     for ($j = 1; $j <= 31; $j++) {
@@ -435,10 +421,14 @@ if ($strMessage != '') {
 
 
         <!-- Boutons -->
-        <div class="flex justify-center gap-16 pt-4 btn-stack">
+        <div
+            class="flex justify-center gap-16 pt-4
+                   max-[400px]:flex-col max-[400px]:gap-4">
 
             <a href="afficher.php?id_liste=<?php echo $idListe; ?>"
-               class="px-8 py-3 border-2 bg-white text-black hover:bg-[#FFB1EA] text-lg font-semibold rounded-lg">
+               class="px-8 py-3 border-2 bg-white text-black hover:bg-[#FFB1EA]
+                      text-lg font-semibold rounded-lg
+                      max-[400px]:w-full max-[400px]:max-w-[260px] max-[400px]:text-center">
                Annuler
             </a>
 
@@ -446,7 +436,9 @@ if ($strMessage != '') {
                 type="submit" 
                 name="btn_enregistrer" 
                 value="Enregistrer"
-                class="px-6 py-3 bg-pink-400 hover:bg-pink-500 text-black font-semibold rounded-lg shadow cursor-pointer"
+                class="px-6 py-3 bg-pink-400 hover:bg-pink-500 text-black font-semibold
+                       rounded-lg shadow cursor-pointer
+                       max-[400px]:w-full max-[400px]:max-w-[260px] max-[400px]:text-center"
             >
 
         </div>
