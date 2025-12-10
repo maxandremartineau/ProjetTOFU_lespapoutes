@@ -278,10 +278,20 @@ document.addEventListener("DOMContentLoaded", function () {
                 type="text" 
                 name="nom_liste"
                 placeholder="ex: Salle à manger"
-                class="mt-2 w-full p-4 rounded-xl border border-gray-400 shadow-sm bg-white"
-                value="<?php echo isset($arrListe["nom"]) ? $arrListe["nom"] : ""; ?>"
+                class="mt-2 w-full p-4 rounded-xl border-2 border-[#FFB1EA] hover:bg-[#FDD4F2] hover:border-[#FF66D6] focus:border-[#FF66D6] shadow-sm bg-white "
+                value="<?php 
+                    if (isset($arrListe["nom"])) {
+                        echo $arrListe["nom"];
+                    } else {
+                        echo "";
+                    }
+                ?>"
             />
-
+            <?php if (isset($arrErreurs["nom"])) { ?>
+                <div class="mt-2 p-2 bg-red-100 border border-red-400 text-red-700 rounded">
+                    <span class="text-sm font-medium"><?php echo $arrErreurs["nom"]; ?></span>
+                </div>
+            <?php } ?>
         </div>
 
         <!-- Couleur -->

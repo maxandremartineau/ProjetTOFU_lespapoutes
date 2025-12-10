@@ -146,6 +146,11 @@ if ($strCodeOperation == "modifier" && $idListe > 0) {
     $arrErreurs = validerListe($arrListe, $arrMessages);
     $ok = (count($arrErreurs) === 0);
 
+    // Debug: Show what we received
+    if (!empty($arrListe['nom']) || !empty($arrListe['couleur_id'])) {
+        $strMessage = "Debug: Nom='" . htmlspecialchars($arrListe['nom']) . "', Couleur='" . $arrListe['couleur_id'] . "', Erreurs=" . count($arrErreurs);
+    }
+
     if ($ok) {
         // Convert color_id to integer after successful validation
         $arrListe['couleur_id'] = intval($arrListe['couleur_id']);
@@ -222,8 +227,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
 <div class="max-w-4xl mx-auto m-16 bg-[#d8ccff] p-12 rounded-2xl shadow-xl">
 
-    <div class="flex items-center justify-between py-6 text-black">
-        <h1 class="font-bold text-4xl md:text-5xl text-black">Modifier la liste</h1>
+    <div class="flex items-center justify-between py-6">
+        <h1 class="font-bold text-4xl md:text-5xl">Modifier la liste</h1>
 
         <a 
             href="../items/ajouter.php?id_liste=<?= $idListe ?>" 
@@ -317,7 +322,7 @@ document.addEventListener("DOMContentLoaded", function () {
         <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
             <a 
                 href="../index.php"
-                class="order-1 bg-white px-10 py-4 rounded-xl text-lg font-semibold shadow hover:bg-[#FFB1EA] text-center md:order-1"
+                class="order-1 bg-white px-10 py-4 rounded-xl text-lg font-semibold shadow hover:bg-gray-200 text-center md:order-1"
             >
                 Annuler
             </a>
@@ -325,7 +330,7 @@ document.addEventListener("DOMContentLoaded", function () {
             <button 
                 type="submit"
                 name="btn_modifier"
-                class="order-2 bg-[#FF66D6] hover:bg-[#ff47cd] text-black text-xl px-10 py-4 rounded-xl shadow font-semibold md:order-2"
+                class="order-2 bg-[#FF66D6] hover:bg-[#ff47cd] text-white text-xl px-10 py-4 rounded-xl shadow font-bold md:order-2"
             >
                 Modifier la liste
             </button>

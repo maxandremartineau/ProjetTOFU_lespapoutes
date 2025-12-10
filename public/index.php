@@ -74,10 +74,7 @@ if ($strCodeOperation == "supprimer") {
 
 <div class="bg-[#383839]">
 <body>
-
-<header>
-    <?php include($niveau.'liaisons/inc/fragments/entete.inc.php');?>
-</header>
+<?php include($niveau.'liaisons/inc/fragments/entete.inc.php');?>
 
 
 
@@ -213,7 +210,7 @@ $pdosResultat->closeCursor();
                 <?= $item['nom'] ?>
             </div>
 
-            <div class="text-red-500 font-bold">
+            <div class="text-red-600 font-bold">
                 <?= $dateAffiche ?>
             </div>
 
