@@ -320,7 +320,7 @@ if ($strMessage != '') {
 
             <?php 
             if ($errNom != '') {
-                echo "<p class='text-red-300 mb-1'>" . $errNom . "</p>";
+                echo "<p class='mb-2 p-2 bg-red-100 border border-red-400 text-red-700 rounded '>" . $errNom . "</p>";
             }
             ?>
 
@@ -352,7 +352,7 @@ if ($strMessage != '') {
 
             <?php 
             if ($errDate != '') {
-                echo "<p class='text-red-300 mb-2'>" . $errDate . "</p>";
+                echo "<p class='mb-2 p-2 bg-red-100 border border-red-400 text-red-700 rounded'>" . $errDate . "</p>";
             }
             ?>
 

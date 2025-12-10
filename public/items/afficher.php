@@ -142,10 +142,10 @@ $nbItems = count($arrItems);
             <span class="w-5 h-5 rounded-full border border-black"
                   style="background-color:#<?php echo $couleurHex; ?>"></span>
 
-            <h2 class="text-2xl font-semibold text-white">
+            <h1 class="text-2xl font-semibold text-white">
                 <?php echo $arrListe['nom']; ?> 
                 <span class="text-white">(<?php echo $nbItems; ?>)</span>
-            </h2>
+            </h1>
         </div>
 
         <!-- Liste des items  -->
@@ -166,61 +166,63 @@ $nbItems = count($arrItems);
             $intEstToggle = ($item['est_complete'] == 1) ? 0 : 1;
         ?>
 
-<!-- Box item -->
+       <!-- Box item -->
 <div class="bg-[#D1C2FF] border border-gray-300 shadow-sm rounded-md
             px-4 py-4 text-black text-base">
 
-    <div class="flex flex-col gap-3 max-[500px]:gap-4 max-[500px]:items-start 
-                min-[500px]:flex-row min-[500px]:items-center min-[500px]:justify-between">
+    <!-- Wrapper principal -->
+    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
 
-        <!-- Colonne gauche -->
-        <div class="flex-1 flex flex-col gap-1">
+        <!-- Colonne gauche (checkbox + nom + date) -->
+        <div class="flex flex-col gap-1 sm:flex-row sm:items-center sm:gap-6 flex-1">
 
-            <!-- Checkbox + nom -->
-            <div class="flex items-center gap-3">
-                <form action="afficher.php" method="GET">
-                    <input type="hidden" name="id_liste" value="<?php echo $arrListe['id']; ?>">
-                    <input type="hidden" name="id_item" value="<?php echo $item['id']; ?>">
-                    <input type="hidden" name="action" value="toggle">
-                    <input type="hidden" name="est_complete" value="<?php echo $intEstToggle; ?>">
+            <!-- Checkbox -->
+            <form action="afficher.php" method="GET" class="flex items-center">
+                <input type="hidden" name="id_liste" value="<?php echo $arrListe['id']; ?>">
+                <input type="hidden" name="id_item" value="<?php echo $item['id']; ?>">
+                <input type="hidden" name="action" value="toggle">
+                <input type="hidden" name="est_complete" value="<?php echo $intEstToggle; ?>">
 
-                    <input 
-                        type="checkbox"
-                        class="h-5 w-5 rounded border-2 border-black accent-[#FF66D6]"
-                        <?php if ($item['est_complete'] == 1) echo "checked"; ?>
-                        onchange="this.form.submit()"
-                    >
-                </form>
+                <input 
+                    type="checkbox"
+                    class="h-5 w-5 rounded border-2 border-black accent-[#FF66D6]"
+                    <?php if ($item['est_complete'] == 1) echo "checked"; ?>
+                    onchange="this.form.submit()"
+                >
+            </form>
 
-                <p class="font-semibold"><?php echo $item['nom']; ?></p>
-            </div>
+            <!-- Nom -->
+            <p class="font-semibold flex-1">
+                <?php echo $item['nom']; ?>
+            </p>
 
-            <!-- Date -->
-            <div class="pl-8 max-[500px]:pl-8 text-black/80 font-medium">
-                Échéance : <?php echo $strEcheance; ?>
-            </div>
+            <!-- Date (texte à gauche en mobile, centré en sm+) -->
+            <p class="text-black/80 font-medium pl-8 sm:pl-0 text-left sm:text-center sm:min-w-32">
+                <?php echo $strEcheance; ?>
+            </p>
         </div>
 
         <!-- Actions -->
-        <div class="flex flex-wrap justify-start gap-4 
-                    min-[500px]:justify-end min-[500px]:gap-6 min-[500px]:w-60">
+        <div class="flex flex-wrap gap-4 sm:flex-nowrap sm:gap-6 sm:w-60 sm:justify-end">
 
             <a href="<?php echo $niveau; ?>items/modifier.php?id_item=<?php echo $item['id']; ?>&id_liste=<?php echo $arrListe['id']; ?>" 
                class="flex items-center gap-1 hover:underline hover:text-[#FF66D6]">
-                <img src="<?php echo $niveau; ?>liaisons/images/icons/edit.svg" class="w-5" alt="">
+                <img src="<?php echo $niveau; ?>liaisons/images/icons/edit_black.svg" class="w-5" alt="">
                 Modifier
             </a>
 
             <a href="afficher.php?id_liste=<?php echo $arrListe['id']; ?>&action=supprimer&id_item=<?php echo $item['id']; ?>" 
                class="flex items-center gap-1 btnOuvrirModaleSupp hover:underline hover:text-[#FF66D6]">
-                <img src="<?php echo $niveau; ?>liaisons/images/icons/remove.svg" class="w-5" alt="">
+                <img src="<?php echo $niveau; ?>liaisons/images/icons/remove_black.svg" class="w-5" alt="">
                 Supprimer
             </a>
+
         </div>
 
     </div>
 
-</div>
+        </div>
+
 
         <?php } ?>
 
@@ -333,5 +335,6 @@ document.getElementById('modalSuppression').addEventListener('click', function(e
 
 </body>
 </html>
+
 
 
