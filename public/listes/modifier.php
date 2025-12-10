@@ -68,11 +68,8 @@ function validerListe($arrListe, $arrMessages) {
     if (!isset($arrListe["nom"]) || trim($arrListe["nom"]) === "") {
         $arrErreurs["nom"] = $arrMessages["nom_liste"]["erreurs"]["vide"];
     } else {
-        // Validation du motif avec regex
         if (preg_match('/^[a-zA-Zà-ÿ0-9 \'\-#]{1,55}$/', $arrListe["nom"])) {
-            // Regex matches - validation passed, no error
         } else {
-            // Regex doesn't match - show error
             $arrErreurs["nom"] = $arrMessages["nom_liste"]["erreurs"]["motif"];
         }
     }
@@ -146,13 +143,7 @@ if ($strCodeOperation == "modifier" && $idListe > 0) {
     $arrErreurs = validerListe($arrListe, $arrMessages);
     $ok = (count($arrErreurs) === 0);
 
-    // Debug: Show what we received
-    if (!empty($arrListe['nom']) || !empty($arrListe['couleur_id'])) {
-        $strMessage = "Debug: Nom='" . htmlspecialchars($arrListe['nom']) . "', Couleur='" . $arrListe['couleur_id'] . "', Erreurs=" . count($arrErreurs);
-    }
-
     if ($ok) {
-        // Convert color_id to integer after successful validation
         $arrListe['couleur_id'] = intval($arrListe['couleur_id']);
 
         $strRequeteUpdate = "

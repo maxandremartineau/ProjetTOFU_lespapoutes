@@ -81,11 +81,9 @@ function validerListe($arrListe, $arrMessages) {
     if (!isset($arrListe["nom"]) || trim($arrListe["nom"]) === "") {
         $arrErreurs["nom"] = $arrMessages["nom_liste"]["erreurs"]["vide"];
     } else {
-        // Validation du motif avec regex
+        
         if (preg_match('/^[a-zA-Zà-ÿ0-9 \'\-#]{1,55}$/', $arrListe["nom"])) {
-            // Regex matches - validation passed, no error
         } else {
-            // Regex doesn't match - show error
             $arrErreurs["nom"] = $arrMessages["nom_liste"]["erreurs"]["motif"];
         }
     }
@@ -117,7 +115,6 @@ function validerListe($arrListe, $arrMessages) {
             }
             $arrListe["couleur_id"] = $nombre;
             
-            // Additional check: make sure it's a valid color ID (greater than 0)
             if ($nombre <= 0) {
                 $arrErreurs["couleur_id"] = $arrMessages["couleurs"]["erreurs"]["vide"];
             }
@@ -185,9 +182,6 @@ if ($strCodeOperation == "ajouter") {
             exit();
 
         }
-    } else {
-        // Individual field errors will be displayed in their respective zones
-        // No general message needed
     }
 }
 
@@ -287,11 +281,6 @@ document.addEventListener("DOMContentLoaded", function () {
                     }
                 ?>"
             />
-            <?php if (isset($arrErreurs["nom"])) { ?>
-                <div class="mt-2 p-2 bg-red-100 border border-red-400 text-red-700 rounded">
-                    <span class="text-sm font-medium"><?php echo $arrErreurs["nom"]; ?></span>
-                </div>
-            <?php } ?>
         </div>
 
         <!-- Couleur -->
