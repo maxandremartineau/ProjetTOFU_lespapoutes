@@ -261,6 +261,11 @@ document.addEventListener("DOMContentLoaded", function () {
         <!-- Nom -->
         <div>
             <label class="text-xl font-semibold text-black">Nom de la liste</label>
+                        <?php if (isset($arrErreurs["nom"])) { ?>
+                <div class="mt-2 p-2 bg-red-100 border border-red-400 text-red-700 rounded">
+                    <span class="text-sm font-medium"><?php echo $arrErreurs["nom"]; ?></span>
+                </div>
+            <?php } ?>
             <input 
                 type="text" 
                 name="nom_liste"
@@ -268,16 +273,17 @@ document.addEventListener("DOMContentLoaded", function () {
                 value="<?= htmlspecialchars($arrListe['nom']) ?>"
                 class="mt-2 w-full p-4 rounded-xl border border-gray-400 shadow-sm bg-white"
             />
-            <?php if (isset($arrErreurs["nom"])) { ?>
-                <div class="mt-2 p-2 bg-red-100 border border-red-400 text-red-700 rounded">
-                    <span class="text-sm font-medium"><?php echo $arrErreurs["nom"]; ?></span>
-                </div>
-            <?php } ?>
+
         </div>
 
         <!-- Couleur -->
         <div>
             <label class="text-xl font-semibold text-black">Couleur du thème</label>
+                        <?php if (isset($arrErreurs["couleur_id"])) { ?>
+                <div class="mt-2 p-2 bg-red-100 border border-red-400 text-red-700 rounded">
+                    <span class="text-sm font-medium"><?php echo $arrErreurs["couleur_id"]; ?></span>
+                </div>
+            <?php } ?>
             <div class="flex flex-wrap gap-6 mt-6">
                 <?php 
                 for ($intCptCouleur = 0; $intCptCouleur < count($arrCouleurs); $intCptCouleur++) { 
@@ -304,11 +310,6 @@ document.addEventListener("DOMContentLoaded", function () {
                     </label>
                 <?php } ?>
             </div>
-            <?php if (isset($arrErreurs["couleur_id"])) { ?>
-                <div class="mt-2 p-2 bg-red-100 border border-red-400 text-red-700 rounded">
-                    <span class="text-sm font-medium"><?php echo $arrErreurs["couleur_id"]; ?></span>
-                </div>
-            <?php } ?>
         </div>
 
 

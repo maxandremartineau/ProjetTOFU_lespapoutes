@@ -130,9 +130,12 @@ $nbItems = count($arrItems);
     <div class="max-w-5xl mx-auto w-full px-4">
 
     <?php
-   
-    if ($strMessage != '') {
-        echo "<p class='text-center text-red-600 font-bold text-xl mt-10'>$strMessage</p>";
+    // Message d'erreur / info annoncé aux lecteurs d'écran
+    if ($strMessage != '') { ?>
+        <p class="text-center text-red-600 font-bold text-xl mt-10" role="alert">
+            <?php echo $strMessage; ?>
+        </p>
+    <?php 
     } 
     else {
     ?>
@@ -148,8 +151,8 @@ $nbItems = count($arrItems);
             </h1>
         </div>
 
-        <!-- Liste des items  -->
-        <div class="mt-6 flex flex-col gap-4">
+        <!-- Liste des items (vraie liste) -->
+        <ul class="mt-6 flex flex-col gap-4" aria-label="Tâches de la liste <?php echo htmlspecialchars($arrListe['nom']); ?>">
 
         <?php 
         for ($i = 0; $i < count($arrItems); $i++) {
@@ -167,66 +170,68 @@ $nbItems = count($arrItems);
         ?>
 
        <!-- Box item -->
-<div class="bg-[#D1C2FF] border border-gray-300 shadow-sm rounded-md
-            px-4 py-4 text-black text-base">
+       <li role="listitem">
+        <div class="bg-[#D1C2FF] border border-gray-300 shadow-sm rounded-md
+                    px-4 py-4 text-black text-base">
 
-    <!-- Wrapper principal -->
-    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <!-- Wrapper principal -->
+            <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
 
-        <!-- Colonne gauche (checkbox + nom + date) -->
-        <div class="flex flex-col gap-1 sm:flex-row sm:items-center sm:gap-6 flex-1">
+                <!-- Colonne gauche (checkbox + nom + date) -->
+                <div class="flex flex-col gap-1 sm:flex-row sm:items-center sm:gap-6 flex-1">
 
-            <!-- Checkbox -->
-            <form action="afficher.php" method="GET" class="flex items-center">
-                <input type="hidden" name="id_liste" value="<?php echo $arrListe['id']; ?>">
-                <input type="hidden" name="id_item" value="<?php echo $item['id']; ?>">
-                <input type="hidden" name="action" value="toggle">
-                <input type="hidden" name="est_complete" value="<?php echo $intEstToggle; ?>">
+                    <!-- Checkbox -->
+                    <form action="afficher.php" method="GET" class="flex items-center">
+                        <input type="hidden" name="id_liste" value="<?php echo $arrListe['id']; ?>">
+                        <input type="hidden" name="id_item" value="<?php echo $item['id']; ?>">
+                        <input type="hidden" name="action" value="toggle">
+                        <input type="hidden" name="est_complete" value="<?php echo $intEstToggle; ?>">
 
-                <input 
-                    type="checkbox"
-                    class="h-5 w-5 rounded border-2 border-black accent-[#FF66D6]"
-                    <?php if ($item['est_complete'] == 1) echo "checked"; ?>
-                    onchange="this.form.submit()"
-                >
-            </form>
+                        <input 
+                            type="checkbox"
+                            class="h-5 w-5 rounded border-2 border-black accent-[#FF66D6]"
+                            <?php if ($item['est_complete'] == 1) echo "checked"; ?>
+                            onchange="this.form.submit()"
+                            aria-label="Marquer l'item « <?php echo htmlspecialchars($item['nom']); ?> » comme <?php echo ($item['est_complete'] == 1) ? 'non terminé' : 'terminé'; ?>"
+                        >
+                    </form>
 
-            <!-- Nom -->
-            <p class="font-semibold flex-1">
-                <?php echo $item['nom']; ?>
-            </p>
+                    <!-- Nom -->
+                    <p class="font-semibold flex-1">
+                        <?php echo $item['nom']; ?>
+                    </p>
 
-            <!-- Date (texte à gauche en mobile, centré en sm+) -->
-            <p class="text-black/80 font-medium pl-8 sm:pl-0 text-left sm:text-center sm:min-w-32">
-                <?php echo $strEcheance; ?>
-            </p>
+                    <!-- Date (texte à gauche en mobile, centré en sm+) -->
+                    <p class="text-black/80 font-medium pl-8 sm:pl-0 text-left sm:text-center sm:min-w-32">
+                        <?php echo $strEcheance; ?>
+                    </p>
+                </div>
+
+                <!-- Actions -->
+                <div class="flex flex-wrap gap-4 sm:flex-nowrap sm:gap-6 sm:w-60 sm:justify-end">
+
+                    <a href="<?php echo $niveau; ?>items/modifier.php?id_item=<?php echo $item['id']; ?>&id_liste=<?php echo $arrListe['id']; ?>" 
+                       class="flex items-center gap-1 hover:underline hover:text-[#FF66D6]">
+                        <img src="<?php echo $niveau; ?>liaisons/images/icons/edit_black.svg" class="w-5" alt="">
+                        Modifier
+                    </a>
+
+                    <a href="afficher.php?id_liste=<?php echo $arrListe['id']; ?>&action=supprimer&id_item=<?php echo $item['id']; ?>" 
+                       class="flex items-center gap-1 btnOuvrirModaleSupp hover:underline hover:text-[#FF66D6]">
+                        <img src="<?php echo $niveau; ?>liaisons/images/icons/remove_black.svg" class="w-5" alt="">
+                        Supprimer
+                    </a>
+
+                </div>
+
+            </div>
+
         </div>
-
-        <!-- Actions -->
-        <div class="flex flex-wrap gap-4 sm:flex-nowrap sm:gap-6 sm:w-60 sm:justify-end">
-
-            <a href="<?php echo $niveau; ?>items/modifier.php?id_item=<?php echo $item['id']; ?>&id_liste=<?php echo $arrListe['id']; ?>" 
-               class="flex items-center gap-1 hover:underline hover:text-[#FF66D6]">
-                <img src="<?php echo $niveau; ?>liaisons/images/icons/edit_black.svg" class="w-5" alt="">
-                Modifier
-            </a>
-
-            <a href="afficher.php?id_liste=<?php echo $arrListe['id']; ?>&action=supprimer&id_item=<?php echo $item['id']; ?>" 
-               class="flex items-center gap-1 btnOuvrirModaleSupp hover:underline hover:text-[#FF66D6]">
-                <img src="<?php echo $niveau; ?>liaisons/images/icons/remove_black.svg" class="w-5" alt="">
-                Supprimer
-            </a>
-
-        </div>
-
-    </div>
-
-        </div>
-
+       </li>
 
         <?php } ?>
 
-        </div>
+        </ul>
 
         <!-- Bouton Ajouter -->
         <form class="flex justify-center py-6" action="ajouter.php" method="GET">
@@ -246,18 +251,20 @@ $nbItems = count($arrItems);
 </main>
 
 <!-- Modale de suppression -->
-
 <dialog id="modalSuppression"
         class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2
-               w-[90%] max-w-lg rounded-2xl p-0 shadow-2xl backdrop:bg-black/70">
+               w-[90%] max-w-lg rounded-2xl p-0 shadow-2xl backdrop:bg-black/70"
+        aria-labelledby="titreSuppression"
+        aria-describedby="texteSuppression"
+        aria-modal="true">
 
     <form method="dialog" class="bg-[#D1C2FF] p-6 sm:p-10 rounded-2xl text-black">
 
-        <h3 class="text-3xl font-bold mb-6 text-center">
+        <h3 id="titreSuppression" class="text-3xl font-bold mb-6 text-center">
             Confirmer la suppression
         </h3>
 
-        <p class="text-center text-black/90 mb-10 text-lg leading-relaxed">
+        <p id="texteSuppression" class="text-center text-black/90 mb-10 text-lg leading-relaxed">
             Voulez-vous vraiment supprimer cet item ?<br>
             Cette action est irréversible.
         </p>
@@ -288,11 +295,15 @@ $nbItems = count($arrItems);
 
 
 <script>
+let lastDeleteButton = null;
+
 /* Ouvrir la modale */
 document.querySelectorAll('.btnOuvrirModaleSupp').forEach(btn => {
 
     btn.addEventListener('click', function(e) {
         e.preventDefault();
+
+        lastDeleteButton = this;
 
         const url = this.getAttribute('href');
         document.getElementById('urlSuppression').value = url;
@@ -300,11 +311,21 @@ document.querySelectorAll('.btnOuvrirModaleSupp').forEach(btn => {
         const dialogue = document.getElementById('modalSuppression');
         if (typeof dialogue.showModal === 'function') {
             dialogue.showModal();
+            // Focus sur le bouton principal pour les lecteurs d'écran
+            document.getElementById('btnConfirmerSuppression').focus();
         } else {
             window.location.href = url;
         }
     });
 });
+
+function fermerDialogueEtRendreFocus() {
+    const dialogue = document.getElementById('modalSuppression');
+    if (typeof dialogue.close === 'function') dialogue.close();
+    if (lastDeleteButton) {
+        lastDeleteButton.focus();
+    }
+}
 
 /* Confirmer la suppression */
 document.getElementById('btnConfirmerSuppression').addEventListener('click', function(e){
@@ -316,8 +337,7 @@ document.getElementById('btnConfirmerSuppression').addEventListener('click', fun
 /* Annuler */
 document.getElementById('btnAnnulerSuppression').addEventListener('click', function(e){
     e.preventDefault();
-    const dialogue = document.getElementById('modalSuppression');
-    if (typeof dialogue.close === 'function') dialogue.close();
+    fermerDialogueEtRendreFocus();
 });
 
 /* Fermer la modale en cliquant à l’extérieur */
@@ -329,12 +349,15 @@ document.getElementById('modalSuppression').addEventListener('click', function(e
         e.clientY >= rect.top &&
         e.clientY <= rect.bottom;
 
-    if (!inside && typeof this.close === 'function') this.close();
+    if (!inside && typeof this.close === 'function') {
+        fermerDialogueEtRendreFocus();
+    }
 });
 </script>
 
 </body>
 </html>
+
 
 
 
