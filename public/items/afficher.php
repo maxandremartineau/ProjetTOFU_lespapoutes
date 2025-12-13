@@ -130,7 +130,7 @@ $nbItems = count($arrItems);
     <div class="max-w-5xl mx-auto w-full px-4">
 
     <?php
-    // Message d'erreur / info annoncé aux lecteurs d'écran
+    // Message d'erreur 
     if ($strMessage != '') { ?>
         <p class="text-center text-red-600 font-bold text-xl mt-10" role="alert">
             <?php echo $strMessage; ?>
@@ -151,7 +151,7 @@ $nbItems = count($arrItems);
             </h1>
         </div>
 
-        <!-- Liste des items (vraie liste) -->
+        <!-- Liste des items -->
         <ul class="mt-6 flex flex-col gap-4" aria-label="Tâches de la liste <?php echo htmlspecialchars($arrListe['nom']); ?>">
 
         <?php 
@@ -177,7 +177,6 @@ $nbItems = count($arrItems);
             <!-- Wrapper principal -->
             <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
 
-                <!-- Colonne gauche (checkbox + nom + date) -->
                 <div class="flex flex-col gap-1 sm:flex-row sm:items-center sm:gap-6 flex-1">
 
                     <!-- Checkbox -->
@@ -201,7 +200,7 @@ $nbItems = count($arrItems);
                         <?php echo $item['nom']; ?>
                     </p>
 
-                    <!-- Date (texte à gauche en mobile, centré en sm+) -->
+                    <!-- Date -->
                     <p class="text-black/80 font-medium pl-8 sm:pl-0 text-left sm:text-center sm:min-w-32">
                         <?php echo $strEcheance; ?>
                     </p>
@@ -311,7 +310,6 @@ document.querySelectorAll('.btnOuvrirModaleSupp').forEach(btn => {
         const dialogue = document.getElementById('modalSuppression');
         if (typeof dialogue.showModal === 'function') {
             dialogue.showModal();
-            // Focus sur le bouton principal pour les lecteurs d'écran
             document.getElementById('btnConfirmerSuppression').focus();
         } else {
             window.location.href = url;

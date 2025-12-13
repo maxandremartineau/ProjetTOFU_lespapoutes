@@ -71,7 +71,7 @@ if ($strMessage == '') {
         $couleurHex = '999999';
     }
 
-    // nb items
+    // nombre items
     $strRequete = "SELECT COUNT(*) FROM items WHERE liste_id = $strIdListe";
     $pdos = $pdoConnexion->query($strRequete);
     $ligneCount = $pdos->fetch();
@@ -149,7 +149,7 @@ if ($strMessage == '' && isset($_GET['btn_enregistrer'])) {
 // Validation date
 if ($chkEcheance) {
 
-    // 1) Tous les champs doivent être choisis
+    //Tous les champs doivent être choisis
     if (!($intAnnee > 0 && $intMois > 0 && $intJour > 0)) {
         $blnValide = false;
 

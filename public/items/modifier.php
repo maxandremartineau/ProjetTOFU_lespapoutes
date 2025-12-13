@@ -211,7 +211,7 @@ if ($chkEcheance) {
 }
 
 
-    // Construire date 
+    // date 
     $strEcheanceSQL = "NULL";
 
     if ($chkEcheance && $errDate == '') {
